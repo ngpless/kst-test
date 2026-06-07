@@ -1,0 +1,21 @@
+# Secrets — NEVER commit
+.env
+.env.*
+!.env.example
+
+# Dependencies
+node_modules/
+
+# Logs
+*.log
+logs/
+npm-debug.log*
+
+# PM2
+.pm2/
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/

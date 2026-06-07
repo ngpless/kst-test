@@ -1,0 +1,822 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#fafafa">
+    <!-- Запрет кэширования HTML -->
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <title>Административный срез</title>
+    <link rel="icon" href="logo.jpg">
+    <link rel="stylesheet" href="styles.css?v=20260126">
+    <!-- Принудительный сброс кэша и Service Worker -->
+    <script>
+        (function() {
+            if ('serviceWorker' in navigator) {
+                navigator.serviceWorker.getRegistrations().then(function(registrations) {
+                    for (let registration of registrations) {
+                        registration.unregister();
+                    }
+                });
+            }
+            if ('caches' in window) {
+                caches.keys().then(function(names) {
+                    for (let name of names) {
+                        caches.delete(name);
+                    }
+                });
+            }
+        })();
+    </script>
+    <script>
+    // Apply saved theme on load (before render to prevent flash)
+    (function() {
+        var saved = localStorage.getItem('preferred-theme');
+        if (saved) document.documentElement.setAttribute('data-theme', saved);
+        else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+            document.documentElement.setAttribute('data-theme', 'dark');
+        }
+    })();
+    </script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html, body {
+            height: 100%;
+            overflow-x: hidden;
+        }
+
+        .srez-page {
+            min-height: 100vh;
+            background: #fafafa;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        /* Экран загрузки */
+        .loading-screen {
+            text-align: center;
+            color: #1a1a1a;
+        }
+
+        .loading-spinner {
+            width: 50px;
+            height: 50px;
+            border: 4px solid #e5e5e5;
+            border-top-color: #1a1a1a;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Карточка входа */
+        .srez-card {
+            background: #ffffff;
+            border-radius: 16px;
+            padding: 40px 32px;
+            max-width: 420px;
+            width: 100%;
+            text-align: center;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+            border: 1px solid #e5e5e5;
+        }
+
+        .srez-card .icon {
+            font-size: 64px;
+            margin-bottom: 16px;
+        }
+
+        .srez-card .logo-img {
+            width: 80px;
+            height: 80px;
+            border-radius: 16px;
+            object-fit: cover;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+            margin-bottom: 16px;
+        }
+
+        .srez-card h1 {
+            color: #1e3a5f;
+            margin: 0 0 8px 0;
+            font-size: 1.6rem;
+        }
+
+        .srez-card .subtitle {
+            color: #6b7280;
+            margin: 0 0 32px 0;
+            font-size: 0.95rem;
+        }
+
+        /* Форма ввода кода */
+        .code-form {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .code-input-wrapper {
+            position: relative;
+        }
+
+        .code-input {
+            width: 100%;
+            padding: 18px 20px;
+            font-size: 2rem;
+            font-weight: 700;
+            text-align: center;
+            letter-spacing: 12px;
+            border: 3px solid #e5e7eb;
+            border-radius: 16px;
+            background: #f9fafb;
+            color: #1e3a5f;
+            transition: all 0.3s;
+        }
+
+        .code-input:focus {
+            outline: none;
+            border-color: #3b82f6;
+            background: white;
+            box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
+        }
+
+        .code-input::placeholder {
+            letter-spacing: 6px;
+            font-size: 1.2rem;
+            font-weight: 400;
+            color: #9ca3af;
+        }
+
+        .code-hint {
+            font-size: 0.85rem;
+            color: #6b7280;
+            margin-top: 8px;
+        }
+
+        .submit-btn {
+            padding: 16px;
+            background: #1a1a1a;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background 0.2s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .submit-btn:hover:not(:disabled):not(.loading) {
+            background: #333333;
+        }
+
+        .submit-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .submit-btn.loading {
+            color: transparent;
+            pointer-events: none;
+        }
+
+        .submit-btn.loading::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 24px;
+            height: 24px;
+            margin: -12px 0 0 -12px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-top-color: white;
+            border-radius: 50%;
+            animation: btn-spin 0.8s linear infinite;
+        }
+
+        @keyframes btn-spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .error-message {
+            color: #ef4444;
+            font-size: 0.9rem;
+            margin-top: 8px;
+            display: none;
+        }
+
+        .error-message.show {
+            display: block;
+        }
+
+        /* Карточка подтверждения */
+        .confirm-card {
+            background: white;
+            border-radius: 24px;
+            padding: 40px 32px;
+            max-width: 500px;
+            width: 100%;
+            text-align: center;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        .confirm-card h1 {
+            color: #1e3a5f;
+            margin: 0 0 20px 0;
+            font-size: 1.4rem;
+        }
+
+        /* Шапка с фото и ФИО */
+        .confirm-header {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 20px;
+            padding: 16px;
+            background: #f5f5f5;
+            border-radius: 12px;
+        }
+
+        .student-photo-container {
+            flex-shrink: 0;
+        }
+
+        .student-photo {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: #e5e7eb;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            border: 3px solid #fff;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .student-photo img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .photo-placeholder {
+            font-size: 36px;
+            opacity: 0.5;
+        }
+
+        .student-main-info {
+            flex: 1;
+            text-align: left;
+        }
+
+        .student-name {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #1a1a1a;
+            margin-bottom: 4px;
+        }
+
+        .student-group {
+            font-size: 0.95rem;
+            color: #6b7280;
+            font-weight: 500;
+        }
+
+        /* Информация о тесте */
+        .test-info {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .test-info-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            padding: 12px 16px;
+            background: #f9fafb;
+            border-radius: 10px;
+            gap: 12px;
+        }
+
+        .test-info-label {
+            color: #6b7280;
+            font-size: 0.85rem;
+            flex-shrink: 0;
+            min-width: 80px;
+        }
+
+        .test-info-value {
+            color: #1e3a5f;
+            font-weight: 600;
+            font-size: 0.9rem;
+            text-align: right;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+        }
+
+        .test-info-value.variant {
+            color: #3b82f6;
+            font-weight: 700;
+            font-size: 1rem;
+        }
+
+        .confirm-buttons {
+            display: flex;
+            gap: 12px;
+        }
+
+        .confirm-buttons .btn {
+            flex: 1;
+            padding: 16px;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+            transition: all 0.3s;
+        }
+
+        .btn-secondary {
+            background: #f3f4f6;
+            color: #1f2937;
+        }
+
+        .btn-secondary:hover {
+            background: #e5e7eb;
+        }
+
+        .btn-primary {
+            background: #1a1a1a;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #333333;
+        }
+
+        /* Экран ошибки */
+        .error-card {
+            background: #ffffff;
+            border-radius: 16px;
+            padding: 40px 32px;
+            max-width: 420px;
+            width: 100%;
+            text-align: center;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+            border: 1px solid #e5e5e5;
+        }
+
+        .error-card .icon {
+            font-size: 64px;
+            margin-bottom: 16px;
+        }
+
+        .error-card h1 {
+            color: #ef4444;
+            margin: 0 0 12px 0;
+            font-size: 1.4rem;
+        }
+
+        .error-card p {
+            color: #6b7280;
+            margin: 0 0 24px 0;
+        }
+
+        .error-card .btn {
+            padding: 14px 32px;
+            background: #f3f4f6;
+            color: #1f2937;
+            border: none;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        /* Скрытие экранов */
+        .screen-hidden {
+            display: none !important;
+        }
+
+        /* Адаптивность */
+        @media (max-width: 600px) {
+            .srez-card, .confirm-card, .error-card {
+                padding: 32px 20px;
+                border-radius: 20px;
+                margin: 12px;
+                max-width: calc(100% - 24px);
+            }
+
+            .code-input {
+                font-size: 1.6rem;
+                letter-spacing: 8px;
+                padding: 16px;
+            }
+
+            .confirm-header {
+                padding: 14px;
+            }
+
+            .student-photo {
+                width: 70px;
+                height: 70px;
+            }
+
+            .student-name {
+                font-size: 1.1rem;
+            }
+
+            .confirm-buttons {
+                flex-direction: column;
+            }
+
+            .confirm-card h1 {
+                font-size: 1.3rem;
+            }
+        }
+
+        @media (max-width: 400px) {
+            .srez-card, .confirm-card, .error-card {
+                padding: 24px 16px;
+            }
+
+            .confirm-header {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .student-main-info {
+                text-align: center;
+            }
+
+            .test-info-row {
+                flex-direction: column;
+                gap: 4px;
+            }
+
+            .test-info-value {
+                text-align: left;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="srez-page">
+        <!-- Экран загрузки -->
+        <div id="loading-screen" class="loading-screen screen-hidden">
+            <div class="loading-spinner"></div>
+            <p>Загрузка...</p>
+        </div>
+
+        <!-- Экран ввода кода -->
+        <div id="code-screen" class="srez-card">
+            <img src="logo.jpg" alt="Логотип" class="logo-img">
+            <h1>Административный срез</h1>
+            <p class="subtitle">Введите 5-значный код из вашей карточки</p>
+
+            <form class="code-form" id="code-form">
+                <div class="code-input-wrapper">
+                    <input
+                        type="text"
+                        id="srez-code"
+                        class="code-input"
+                        placeholder="00000"
+                        maxlength="5"
+                        pattern="\d{5}"
+                        inputmode="numeric"
+                        autocomplete="off"
+                        required
+                    >
+                    <p class="code-hint">Код указан на карточке от преподавателя</p>
+                </div>
+                <button type="submit" class="submit-btn" id="submit-btn" disabled>Войти</button>
+                <div class="error-message" id="error-message"></div>
+            </form>
+        </div>
+
+        <!-- Экран подтверждения -->
+        <div id="confirm-screen" class="confirm-card screen-hidden">
+            <h1>Подтвердите ваши данные</h1>
+
+            <!-- Фото и основная информация -->
+            <div class="confirm-header">
+                <div class="student-photo-container">
+                    <div class="student-photo" id="confirm-photo">
+                        <span class="photo-placeholder">👤</span>
+                    </div>
+                </div>
+                <div class="student-main-info">
+                    <div class="student-name" id="confirm-name">-</div>
+                    <div class="student-group" id="confirm-group">-</div>
+                </div>
+            </div>
+
+            <!-- Информация о тесте -->
+            <div class="test-info">
+                <div class="test-info-row">
+                    <span class="test-info-label">Дисциплина</span>
+                    <span class="test-info-value" id="confirm-discipline">-</span>
+                </div>
+                <div class="test-info-row">
+                    <span class="test-info-label">Тест</span>
+                    <span class="test-info-value" id="confirm-test">-</span>
+                </div>
+                <div class="test-info-row">
+                    <span class="test-info-label">Вариант</span>
+                    <span class="test-info-value variant" id="confirm-variant">-</span>
+                </div>
+            </div>
+
+            <div class="confirm-buttons">
+                <button class="btn btn-secondary" id="back-btn">Назад</button>
+                <button class="btn btn-primary" id="start-btn">Начать срез</button>
+            </div>
+        </div>
+
+        <!-- Экран ошибки -->
+        <div id="error-screen" class="error-card screen-hidden">
+            <div class="icon">😕</div>
+            <h1 id="error-title">Ошибка</h1>
+            <p id="error-text">Что-то пошло не так</p>
+            <button class="btn" id="retry-btn">Попробовать снова</button>
+        </div>
+    </div>
+
+    <!-- Кнопка переключения темы -->
+    <button class="theme-toggle-btn" onclick="toggleTheme()" title=""></button>
+
+    <script>
+        // Dark mode toggle
+        function toggleTheme() {
+            const current = document.documentElement.getAttribute('data-theme');
+            const next = current === 'dark' ? 'light' : 'dark';
+            document.documentElement.setAttribute('data-theme', next);
+            localStorage.setItem('preferred-theme', next);
+            updateThemeIcon();
+        }
+
+        function updateThemeIcon() {
+            const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+            document.querySelectorAll('.theme-toggle-btn').forEach(btn => {
+                btn.textContent = isDark ? '\u2600\uFE0F' : '\uD83C\uDF19';
+                btn.title = isDark ? '\u0421\u0432\u0435\u0442\u043B\u0430\u044F \u0442\u0435\u043C\u0430' : '\u0422\u0451\u043C\u043D\u0430\u044F \u0442\u0435\u043C\u0430';
+            });
+        }
+        updateThemeIcon();
+    </script>
+
+    <script>
+        const API_BASE = 'api';
+
+        let srezData = null;
+        let participantData = null;
+        let testData = null;
+        let questionsData = [];
+        let currentPassword = null; // Пароль участника для восстановления сессии
+
+        // Проверка режима технических работ
+        async function checkMaintenanceModeSrez() {
+            try {
+                const res = await fetch('api/maintenance');
+                const data = await res.json();
+                if (data.enabled) {
+                    // Удаляем всё содержимое и показываем блокирующий экран
+                    document.body.innerHTML = `
+                        <div class="maintenance-blocking-screen">
+                            <div class="maintenance-blocking-content">
+                                <div class="maintenance-blocking-icon">🔧</div>
+                                <h1 class="maintenance-blocking-title">Технические работы</h1>
+                                <p class="maintenance-blocking-message">${(data.message || 'Ведутся технические работы').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#039;')}</p>
+                                <div class="maintenance-blocking-info">
+                                    <p>Административный срез временно недоступен.</p>
+                                    <p>Пожалуйста, попробуйте позже.</p>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                    return true;
+                }
+            } catch (e) {
+                console.log('Не удалось проверить режим техработ');
+            }
+            return false;
+        }
+
+        // Показать экран
+        function showScreen(screenId) {
+            document.querySelectorAll('.srez-page > div').forEach(el => {
+                el.classList.add('screen-hidden');
+            });
+            document.getElementById(screenId).classList.remove('screen-hidden');
+        }
+
+        // Показать ошибку
+        function showError(title, message) {
+            document.getElementById('error-title').textContent = title;
+            document.getElementById('error-text').textContent = message;
+            showScreen('error-screen');
+        }
+
+        // Функция авторизации по паролю
+        async function loginWithPassword(password) {
+            const errorMessage = document.getElementById('error-message');
+            const submitBtn = document.getElementById('submit-btn');
+
+            if (submitBtn) {
+                submitBtn.disabled = true;
+                submitBtn.classList.add('loading');
+            }
+
+            try {
+                // Используем тот же эндпоинт exam-start - он работает для обоих режимов
+                const response = await fetch(`${API_BASE}/public/exam-start`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ password })
+                });
+
+                const result = await response.json();
+
+                if (!result.success) {
+                    if (errorMessage) {
+                        errorMessage.textContent = result.error || 'Неверный код';
+                        errorMessage.classList.add('show');
+                    }
+                    if (submitBtn) {
+                        submitBtn.disabled = false;
+                        submitBtn.classList.remove('loading');
+                    }
+                    showScreen('code-screen');
+                    return false;
+                }
+
+                // Сохраняем данные
+                srezData = result;
+                participantData = result.participant;
+                testData = result.test;
+                questionsData = result.questions;
+                currentPassword = password; // Сохраняем пароль для восстановления
+
+                // Заполняем экран подтверждения
+                const fullName = `${participantData.surname} ${participantData.name}${participantData.patronymic ? ' ' + participantData.patronymic : ''}`;
+                document.getElementById('confirm-name').textContent = fullName;
+                document.getElementById('confirm-group').textContent = `Группа: ${participantData.group}`;
+                document.getElementById('confirm-discipline').textContent = testData.disciplineName || '-';
+                document.getElementById('confirm-test').textContent = testData.name;
+                document.getElementById('confirm-variant').textContent = participantData.variant ? `Вариант ${participantData.variant}` : 'Не назначен';
+
+                // Фото студента
+                const photoContainer = document.getElementById('confirm-photo');
+                if (participantData.photoUrl) {
+                    const img = document.createElement('img');
+                    img.src = participantData.photoUrl;
+                    img.alt = 'Фото';
+                    photoContainer.innerHTML = '';
+                    photoContainer.appendChild(img);
+                } else {
+                    photoContainer.innerHTML = '<span class="photo-placeholder">👤</span>';
+                }
+
+                // КРИТИЧЕСКАЯ ЗАЩИТА: заменяем историю чтобы кнопка "Назад" не возвращала на /start
+                window.history.replaceState({ srezConfirm: true }, '', '/srez');
+                window.history.pushState({ srezConfirm: true }, '', '/srez');
+
+                // Обработчик кнопки "Назад" браузера - переход к началу теста
+                window.addEventListener('popstate', function srezBackHandler(e) {
+                    // При нажатии "Назад" - сразу начинаем тест (студент уже авторизован)
+                    window.removeEventListener('popstate', srezBackHandler);
+                    startSrez();
+                });
+
+                showScreen('confirm-screen');
+                return true;
+
+            } catch (err) {
+                if (errorMessage) {
+                    errorMessage.textContent = 'Ошибка соединения с сервером';
+                    errorMessage.classList.add('show');
+                }
+                if (submitBtn) {
+                    submitBtn.disabled = false;
+                    submitBtn.classList.remove('loading');
+                }
+                showScreen('code-screen');
+                return false;
+            }
+        }
+
+        // Инициализация
+        document.addEventListener('DOMContentLoaded', async () => {
+            // Проверяем режим технических работ
+            const maintenanceActive = await checkMaintenanceModeSrez();
+            if (maintenanceActive) return; // Прекращаем инициализацию
+
+            // Сначала добавляем все обработчики событий
+            const codeInput = document.getElementById('srez-code');
+            const submitBtn = document.getElementById('submit-btn');
+            const codeForm = document.getElementById('code-form');
+            const errorMessage = document.getElementById('error-message');
+
+            // Валидация ввода (только цифры)
+            codeInput.addEventListener('input', (e) => {
+                e.target.value = e.target.value.replace(/\D/g, '').slice(0, 5);
+                submitBtn.disabled = e.target.value.length !== 5;
+                errorMessage.classList.remove('show');
+            });
+
+            // Отправка формы
+            codeForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+
+                const password = codeInput.value;
+                if (password.length !== 5) return;
+
+                await loginWithPassword(password);
+            });
+
+            // Кнопка "Назад" - возврат на start.html
+            document.getElementById('back-btn').addEventListener('click', () => {
+                window.location.href = '/start';
+            });
+
+            // Кнопка "Начать срез"
+            document.getElementById('start-btn').addEventListener('click', () => {
+                startSrez();
+            });
+
+            // Кнопка "Попробовать снова" - возврат на start.html
+            document.getElementById('retry-btn').addEventListener('click', () => {
+                window.location.href = '/start';
+            });
+
+            // БЕЗОПАСНОСТЬ: читаем код из sessionStorage (НЕ из URL!)
+            const secureCode = sessionStorage.getItem('secureExamCode');
+            if (secureCode) {
+                // Сразу удаляем код из sessionStorage (одноразовое использование)
+                sessionStorage.removeItem('secureExamCode');
+
+                if (/^\d{5}$/.test(secureCode)) {
+                    // Автоматическая авторизация
+                    showScreen('loading-screen');
+                    const success = await loginWithPassword(secureCode);
+                    if (success) return;
+                }
+            }
+
+            showScreen('code-screen');
+        });
+
+        // Простое шифрование для защиты данных в sessionStorage
+        function encodeSessionData(data) {
+            const json = JSON.stringify(data);
+            const timestamp = Date.now();
+            const payload = { d: json, t: timestamp, v: 1 };
+            return btoa(encodeURIComponent(JSON.stringify(payload)));
+        }
+
+        // Начать срез - редирект на страницу теста с данными
+        function startSrez() {
+            // КРИТИЧЕСКАЯ ЗАЩИТА: заменяем историю, чтобы нельзя было вернуться назад
+            window.history.replaceState({ srezStarted: true }, '', '/srez');
+
+            // Сохраняем данные в sessionStorage для передачи на страницу теста
+            const srezSession = {
+                participantId: participantData.id,
+                testId: testData.id,
+                testLink: testData.link,
+                isExamMode: true,
+                isAdminSrezMode: true,
+                examPassword: currentPassword, // Пароль для восстановления сессии
+                variant: participantData.variant,
+                studentName: participantData.name,
+                studentSurname: participantData.surname,
+                studentPatronymic: participantData.patronymic || '',
+                studentGroup: participantData.group,
+                questions: questionsData,
+                test: testData
+            };
+
+            // Шифруем данные перед сохранением
+            sessionStorage.setItem('examSession', encodeSessionData(srezSession));
+
+            // Переходим на страницу теста
+            window.location.href = `/test/${testData.link}?exam=1`;
+        }
+    </script>
+</body>
+</html>

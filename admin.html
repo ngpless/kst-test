@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#fafafa">
+    <title>Панель управления | Система тестирования</title>
+    <link rel="icon" href="favicon.ico" sizes="any">
+    <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
+    <link rel="stylesheet" href="styles.css">
+    <script>
+    // Apply saved theme on load (before render to prevent flash)
+    (function() {
+        var saved = localStorage.getItem('preferred-theme');
+        if (saved) document.documentElement.setAttribute('data-theme', saved);
+        else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+            document.documentElement.setAttribute('data-theme', 'dark');
+        }
+    })();
+    </script>
+    <style>
+        /* Убираем белые рамки вокруг страницы */
+        html, body {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            min-height: 100vh;
+            background: var(--bg);
+        }
+
+        /* Экран загрузки */
+        #loading-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--bg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+        }
+        #loading-screen .spinner {
+            width: 50px;
+            height: 50px;
+            border: 4px solid var(--border);
+            border-top-color: var(--primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        #loading-screen.hidden {
+            display: none;
+        }
+    </style>
+    <!-- KaTeX для LaTeX формул -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+    <script>
+        function renderLatex(element) {
+            if (typeof renderMathInElement === 'function') {
+                renderMathInElement(element, {
+                    delimiters: [
+                        {left: '$$', right: '$$', display: true},
+                        {left: '$', right: '$', display: false},
+                        {left: '\\(', right: '\\)', display: false},
+                        {left: '\\[', right: '\\]', display: true}
+                    ],
+                    throwOnError: false
+                });
+            }
+        }
+    </script>
+</head>
+<body>
+    <!-- Экран загрузки (показывается пока проверяется авторизация) -->
+    <div id="loading-screen">
+        <div class="spinner"></div>
+    </div>
+
+    <!-- Экран админ-панели (создается динамически через admin.js) -->
+    <div id="screen-admin" class="screen"></div>
+
+    <!-- ExcelJS для создания красивых Excel файлов со стилями -->
+    <script src="https://cdn.jsdelivr.net/npm/exceljs@4.4.0/dist/exceljs.min.js"></script>
+    <!-- Docx для создания Word документов -->
+    <script src="https://cdn.jsdelivr.net/npm/docx@8.5.0/build/index.umd.min.js"></script>
+    <!-- JSZip для создания архивов с PDF карточками -->
+    <script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
+    <!-- html2canvas + jsPDF для генерации PDF файлов -->
+    <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
+
+    <!-- Кнопка переключения темы -->
+    <button class="theme-toggle-btn" onclick="toggleTheme()" title=""></button>
+    <script>
+    function toggleTheme() {
+        var current = document.documentElement.getAttribute('data-theme');
+        var next = current === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', next);
+        localStorage.setItem('preferred-theme', next);
+        updateThemeIcon();
+    }
+    function updateThemeIcon() {
+        var isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+        document.querySelectorAll('.theme-toggle-btn').forEach(function(btn) {
+            btn.textContent = isDark ? '\u2600\uFE0F' : '\uD83C\uDF19';
+            btn.title = isDark ? '\u0421\u0432\u0435\u0442\u043B\u0430\u044F \u0442\u0435\u043C\u0430' : '\u0422\u0451\u043C\u043D\u0430\u044F \u0442\u0435\u043C\u0430';
+        });
+    }
+    updateThemeIcon();
+    </script>
+
+    <!-- Модульная структура админ-панели -->
+    <!-- 1. Базовые утилиты (должны быть первыми) -->
+    <script src="js/admin/utils.js"></script>
+    <!-- 2. Глобальное состояние -->
+    <script src="js/admin/state.js"></script>
+    <!-- 3. Модальные окна -->
+    <script src="js/admin/modals.js"></script>
+    <!-- 4. API функции -->
+    <script src="js/admin/api.js"></script>
+    <!-- 5. Загрузка изображений -->
+    <script src="js/admin/image-upload.js"></script>
+    <!-- 6. Основные вкладки -->
+    <script src="js/admin/disciplines.js"></script>
+    <script src="js/admin/questions.js"></script>
+    <script src="js/admin/results.js"></script>
+    <script src="js/admin/teacher-notes.js"></script>
+    <script src="js/admin/analytics.js"></script>
+    <script src="js/admin/groups.js"></script>
+    <script src="js/admin/users.js"></script>
+    <script src="js/admin/profile.js"></script>
+    <!-- 7. Дополнительные функции -->
+    <script src="js/admin/export.js"></script>
+    <script src="js/admin/help.js"></script>
+    <script src="js/admin/exam-participants.js"></script>
+    <script src="js/admin/srez-participants.js"></script>
+    <script src="js/admin/srez-monitor.js"></script>
+    <script src="js/admin/exam-monitor.js"></script>
+    <script src="js/admin/navigation.js"></script>
+    <script>
+        // Инициализация админ-панели
+        document.addEventListener('DOMContentLoaded', async () => {
+            const loadingScreen = document.getElementById('loading-screen');
+
+            // Проверяем авторизацию
+            const authResult = await checkAuthWithMaintenance();
+
+            if (authResult.success) {
+                // Авторизован - загружаем данные и показываем панель
+                await loadAllData();
+                createAdminPanel();
+                loadingScreen.classList.add('hidden');
+
+                // Запускаем автоматическую проверку авторизации
+                startAuthChecker();
+            } else if (authResult.maintenance) {
+                // Режим техработ - экран уже показан, ничего не делаем
+                loadingScreen.classList.add('hidden');
+            } else {
+                // Не авторизован - перенаправляем на главную
+                window.location.href = 'index.html';
+            }
+        });
+    </script>
+</body>
+</html>

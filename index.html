@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#fafafa">
+    <!-- Запрет кэширования HTML -->
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <title>Система тестирования | Вход</title>
+    <link rel="icon" href="favicon.ico" sizes="any">
+    <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
+    <link rel="stylesheet" href="styles.css?v=20260126">
+    <!-- Принудительный сброс кэша и Service Worker -->
+    <script>
+        (function() {
+            if ('serviceWorker' in navigator) {
+                navigator.serviceWorker.getRegistrations().then(function(registrations) {
+                    for (let registration of registrations) {
+                        registration.unregister();
+                    }
+                });
+            }
+            if ('caches' in window) {
+                caches.keys().then(function(names) {
+                    for (let name of names) {
+                        caches.delete(name);
+                    }
+                });
+            }
+        })();
+    </script>
+    <style>
+        .login-page {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #fafafa;
+            padding: 20px;
+            position: relative;
+        }
+
+        .login-container {
+            position: relative;
+            z-index: 1;
+            width: 100%;
+            max-width: 440px;
+        }
+
+        .login-card {
+            background: #ffffff;
+            border-radius: 16px;
+            padding: 48px 40px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+            border: 1px solid #e5e5e5;
+        }
+
+        .login-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .login-logo {
+            width: 80px;
+            height: 80px;
+            border-radius: 16px;
+            margin: 0 auto 24px;
+            overflow: hidden;
+        }
+
+        .login-logo img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .login-header h1 {
+            font-size: 1.5rem;
+            color: #1a1a1a;
+            margin: 0 0 8px 0;
+            font-weight: 600;
+        }
+
+        .login-header p {
+            color: #737373;
+            margin: 0;
+            font-size: 0.9rem;
+        }
+
+        .login-form .form-group {
+            margin-bottom: 24px;
+        }
+
+        .login-form label {
+            display: block;
+            margin-bottom: 8px;
+            color: #1a1a1a;
+            font-weight: 500;
+            font-size: 0.875rem;
+        }
+
+        .login-form .input-wrapper {
+            position: relative;
+        }
+
+        .login-form .input-icon {
+            position: absolute;
+            left: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 18px;
+            opacity: 0.5;
+        }
+
+        .login-form input {
+            width: 100%;
+            padding: 14px 14px 14px 44px;
+            border: 1px solid #e5e5e5;
+            border-radius: 8px;
+            background: #ffffff;
+            color: #1a1a1a;
+            font-size: 0.95rem;
+            transition: border-color 0.2s;
+            box-sizing: border-box;
+        }
+
+        .login-form input:focus {
+            outline: none;
+            border-color: #2563eb;
+        }
+
+        .login-form input::placeholder {
+            color: #9ca3af;
+        }
+
+        .login-error {
+            background: #fef2f2;
+            border: 1px solid #fecaca;
+            color: #dc2626;
+            padding: 12px 16px;
+            border-radius: 10px;
+            margin-bottom: 24px;
+            font-size: 0.9rem;
+            text-align: center;
+            display: none;
+        }
+
+        .login-error.show {
+            display: block;
+            animation: shake 0.5s ease-in-out;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            20%, 60% { transform: translateX(-5px); }
+            40%, 80% { transform: translateX(5px); }
+        }
+
+        .login-btn {
+            width: 100%;
+            padding: 14px;
+            background: #2563eb;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background 0.2s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .login-btn:hover {
+            background: #1d4ed8;
+        }
+
+        .login-btn:active {
+            background: #1e40af;
+        }
+
+        .login-btn:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .login-btn.loading {
+            color: transparent;
+        }
+
+        .login-btn.loading::after {
+            content: '';
+            position: absolute;
+            width: 24px;
+            height: 24px;
+            top: 50%;
+            left: 50%;
+            margin-left: -12px;
+            margin-top: -12px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: #fff;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .login-footer {
+            margin-top: 32px;
+            padding-top: 24px;
+            border-top: 1px solid #e5e7eb;
+            text-align: center;
+        }
+
+        .login-footer p {
+            color: #9ca3af;
+            font-size: 0.85rem;
+            margin: 0;
+        }
+
+        .login-footer a {
+            color: #1a1a1a;
+            text-decoration: underline;
+            font-weight: 500;
+        }
+
+        .login-footer a:hover {
+            text-decoration: underline;
+        }
+
+        /* Адаптив */
+        @media (max-width: 480px) {
+            .login-card {
+                padding: 40px 28px;
+                border-radius: 20px;
+            }
+
+            .login-logo {
+                width: 70px;
+                height: 70px;
+                font-size: 32px;
+            }
+
+            .login-header h1 {
+                font-size: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="login-page">
+        <div class="login-container">
+            <div class="login-card">
+                <div class="login-header">
+                    <div class="login-logo">
+                        <img src="logo.jpg" alt="Логотип">
+                    </div>
+                    <h1>Система тестирования</h1>
+                    <p>Вход для преподавателей</p>
+                </div>
+
+                <div id="login-error" class="login-error"></div>
+
+                <form id="login-form" class="login-form">
+                    <div class="form-group">
+                        <label for="username">Логин</label>
+                        <div class="input-wrapper">
+                            <span class="input-icon">👤</span>
+                            <input
+                                type="text"
+                                id="username"
+                                name="username"
+                                placeholder="Введите логин"
+                                autocomplete="username"
+                                required
+                            >
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="password">Пароль</label>
+                        <div class="input-wrapper">
+                            <span class="input-icon">🔒</span>
+                            <input
+                                type="password"
+                                id="password"
+                                name="password"
+                                placeholder="Введите пароль"
+                                autocomplete="current-password"
+                                required
+                            >
+                        </div>
+                    </div>
+
+                    <button type="submit" id="login-btn" class="login-btn">Войти</button>
+                </form>
+
+                <div class="login-footer">
+                    <p>Панель управления тестами</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = 'api';
+
+        // Проверка режима технических работ
+        async function checkMaintenanceModeIndex() {
+            try {
+                const res = await fetch('api/maintenance');
+                const data = await res.json();
+                if (data.enabled) {
+                    const banner = document.createElement('div');
+                    banner.id = 'maintenance-banner';
+                    banner.className = 'maintenance-banner';
+                    banner.innerHTML = `
+                        <div class="maintenance-banner-content">
+                            <div class="maintenance-banner-icon">&#128679;</div>
+                            <div class="maintenance-banner-text">
+                                <div class="maintenance-banner-title">Технические работы</div>
+                                <div class="maintenance-banner-message">${data.message.replace(/</g, '&lt;').replace(/>/g, '&gt;')}</div>
+                            </div>
+                        </div>
+                    `;
+                    document.body.insertBefore(banner, document.body.firstChild);
+                    document.body.classList.add('maintenance-active');
+                }
+            } catch (e) {
+                console.log('Не удалось проверить режим техработ');
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            // Проверяем режим технических работ
+            await checkMaintenanceModeIndex();
+
+            // Показываем сообщение об истечении сессии, если есть
+            showAuthMessage();
+
+            // Проверяем, авторизован ли уже пользователь
+            const token = localStorage.getItem('admin_token');
+            if (token) {
+                const isValid = await checkAuth(token);
+                if (isValid) {
+                    window.location.href = 'admin.html';
+                    return;
+                }
+            }
+
+            // Обработка формы входа
+            document.getElementById('login-form').addEventListener('submit', handleLogin);
+
+            // Enter на полях
+            document.getElementById('password').addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    document.getElementById('login-form').dispatchEvent(new Event('submit'));
+                }
+            });
+        });
+
+        async function checkAuth(token) {
+            try {
+                const response = await fetch(`${API_BASE}/auth/check`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const result = await response.json();
+                return result.success;
+            } catch {
+                return false;
+            }
+        }
+
+        async function handleLogin(e) {
+            e.preventDefault();
+
+            const username = document.getElementById('username').value.trim();
+            const password = document.getElementById('password').value;
+            const errorEl = document.getElementById('login-error');
+            const submitBtn = document.getElementById('login-btn');
+
+            if (!username || !password) {
+                showError('Заполните все поля');
+                return;
+            }
+
+            submitBtn.classList.add('loading');
+            submitBtn.disabled = true;
+            errorEl.classList.remove('show');
+
+            try {
+                const response = await fetch(`${API_BASE}/auth/login`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, password })
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    localStorage.setItem('admin_token', result.token);
+                    localStorage.setItem('admin_user', JSON.stringify(result.user));
+                    window.location.href = 'admin.html';
+                } else {
+                    showError('Неверный логин или пароль');
+                }
+            } catch (error) {
+                showError('Ошибка соединения с сервером');
+            } finally {
+                submitBtn.classList.remove('loading');
+                submitBtn.disabled = false;
+            }
+        }
+
+        function showError(message) {
+            const errorEl = document.getElementById('login-error');
+            errorEl.textContent = message;
+            errorEl.classList.add('show');
+            setTimeout(() => errorEl.classList.remove('show'), 5000);
+        }
+
+        // Показать сообщение об истечении сессии (если есть)
+        function showAuthMessage() {
+            const message = sessionStorage.getItem('auth_message');
+            if (message) {
+                sessionStorage.removeItem('auth_message');
+                // Показываем уведомление после небольшой задержки
+                setTimeout(() => {
+                    showError(message);
+                }, 500);
+            }
+        }
+    </script>
+</body>
+</html>

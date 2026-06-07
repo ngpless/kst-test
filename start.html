@@ -1,0 +1,907 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#fafafa">
+    <!-- Запрет кэширования HTML -->
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <title>Начать тестирование | КСТ</title>
+    <link rel="icon" href="favicon.ico" sizes="any">
+    <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
+    <!-- Принудительный сброс кэша и Service Worker -->
+    <script>
+        (function() {
+            if ('serviceWorker' in navigator) {
+                navigator.serviceWorker.getRegistrations().then(function(registrations) {
+                    for (let registration of registrations) {
+                        registration.unregister();
+                    }
+                });
+            }
+            if ('caches' in window) {
+                caches.keys().then(function(names) {
+                    for (let name of names) {
+                        caches.delete(name);
+                    }
+                });
+            }
+        })();
+    </script>
+    <script>
+    // Apply saved theme on load (before render to prevent flash)
+    (function() {
+        var saved = localStorage.getItem('preferred-theme');
+        if (saved) document.documentElement.setAttribute('data-theme', saved);
+        else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+            document.documentElement.setAttribute('data-theme', 'dark');
+        }
+    })();
+    </script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            min-height: 100vh;
+            background: #fafafa;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .container {
+            position: relative;
+            z-index: 1;
+            width: 100%;
+            max-width: 480px;
+        }
+
+        .main-card {
+            background: #ffffff;
+            border-radius: 16px;
+            padding: 48px 40px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+            border: 1px solid #e5e5e5;
+            text-align: center;
+        }
+
+        .logo {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 24px;
+            border-radius: 16px;
+            overflow: hidden;
+        }
+
+        .logo img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        h1 {
+            font-size: 1.5rem;
+            color: #1a1a1a;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+
+        .subtitle {
+            color: #737373;
+            font-size: 0.95rem;
+            margin-bottom: 32px;
+        }
+
+        .code-input-wrapper {
+            position: relative;
+            margin-bottom: 20px;
+        }
+
+        .code-input {
+            width: 100%;
+            padding: 18px 24px;
+            font-size: 1.75rem;
+            font-weight: 600;
+            text-align: center;
+            letter-spacing: 6px;
+            border: 1px solid #e5e5e5;
+            border-radius: 8px;
+            background: #ffffff;
+            color: #1a1a1a;
+            transition: border-color 0.2s;
+        }
+
+        .code-input:focus {
+            outline: none;
+            border-color: #3b82f6;
+            background: white;
+            border-color: #1a1a1a;
+        }
+
+        .code-input::placeholder {
+            color: #9ca3af;
+            letter-spacing: 4px;
+            font-size: 1.2rem;
+        }
+
+        .error-message {
+            background: #fef2f2;
+            border: 1px solid #fecaca;
+            color: #dc2626;
+            padding: 12px 16px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            font-size: 0.95rem;
+            display: none;
+        }
+
+        .error-message.show {
+            display: block;
+            animation: shake 0.4s ease;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-8px); }
+            75% { transform: translateX(8px); }
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 16px 32px;
+            font-size: 1rem;
+            font-weight: 500;
+            color: white;
+            background: #2563eb;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background 0.2s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .submit-btn:hover {
+            background: #1d4ed8;
+        }
+
+        .submit-btn:active {
+            background: #1e40af;
+        }
+
+        .submit-btn:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .submit-btn.loading {
+            color: transparent;
+        }
+
+        .submit-btn.loading::after {
+            content: '';
+            position: absolute;
+            width: 28px;
+            height: 28px;
+            top: 50%;
+            left: 50%;
+            margin: -14px 0 0 -14px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Информационные карточки */
+        .info-cards {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            margin-top: 28px;
+            padding-top: 28px;
+            border-top: 1px solid #e5e7eb;
+        }
+
+        .info-card {
+            padding: 14px 8px;
+            background: #f9fafb;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+
+        .info-card:hover {
+            background: #f3f4f6;
+            border-color: #3b82f6;
+            transform: translateY(-2px);
+        }
+
+        .info-card-icon {
+            font-size: 1.5rem;
+            margin-bottom: 6px;
+        }
+
+        .info-card-title {
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: #374151;
+        }
+
+        .modal-icon.test { background: #2563eb; }
+
+        /* Модальные окна */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(4px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+            padding: 20px;
+        }
+
+        .modal-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .modal {
+            background: white;
+            border-radius: 20px;
+            width: 100%;
+            max-width: 440px;
+            max-height: 80vh;
+            overflow-y: auto;
+            transform: scale(0.9) translateY(20px);
+            transition: all 0.3s ease;
+        }
+
+        .modal-overlay.active .modal {
+            transform: scale(1) translateY(0);
+        }
+
+        .modal-header {
+            padding: 24px 24px 0;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .modal-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            flex-shrink: 0;
+        }
+
+        .modal-icon.training { background: #22c55e; }
+        .modal-icon.exam { background: #eab308; }
+        .modal-icon.srez { background: #ef4444; }
+
+        .modal-title {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: #1f2937;
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 16px;
+            right: 16px;
+            width: 36px;
+            height: 36px;
+            border: none;
+            background: #f3f4f6;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 1.2rem;
+            color: #6b7280;
+            transition: all 0.2s;
+        }
+
+        .modal-close:hover {
+            background: #e5e7eb;
+            color: #1f2937;
+        }
+
+        .modal-body {
+            padding: 20px 24px 24px;
+        }
+
+        .modal-body p {
+            color: #4b5563;
+            line-height: 1.7;
+            margin-bottom: 16px;
+        }
+
+        .modal-body ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .modal-body li {
+            padding: 12px 0;
+            padding-left: 32px;
+            position: relative;
+            color: #4b5563;
+            border-bottom: 1px solid #f3f4f6;
+        }
+
+        .modal-body li:last-child {
+            border-bottom: none;
+        }
+
+        .modal-body li::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 20px;
+            height: 20px;
+            background: #3b82f6;
+            border-radius: 50%;
+            opacity: 0.2;
+        }
+
+        .modal-body li::after {
+            content: '';
+            position: absolute;
+            left: 6px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 8px;
+            height: 8px;
+            background: #2563eb;
+            border-radius: 50%;
+        }
+
+        .highlight {
+            background: rgba(0, 0, 0, 0.06);
+            padding: 2px 8px;
+            border-radius: 6px;
+            font-weight: 600;
+        }
+
+        /* Футер */
+        .footer {
+            text-align: center;
+            margin-top: 24px;
+            color: #737373;
+            font-size: 0.9rem;
+        }
+
+        .footer a {
+            color: #2563eb;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .footer a:hover {
+            text-decoration: underline;
+        }
+
+        /* Баннер техработ */
+        .maintenance-banner {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: #eab308;
+            color: #1a1a1a;
+            padding: 12px 20px;
+            z-index: 2000;
+            text-align: center;
+            font-weight: 500;
+        }
+
+        body.maintenance-active {
+            padding-top: 60px;
+        }
+
+        /* Адаптив */
+        @media (max-width: 520px) {
+            .main-card {
+                padding: 36px 24px;
+                border-radius: 20px;
+            }
+
+            h1 {
+                font-size: 1.5rem;
+            }
+
+            .code-input {
+                font-size: 1.5rem;
+                letter-spacing: 6px;
+                padding: 16px 20px;
+            }
+
+            .info-cards {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 10px;
+            }
+
+            .info-card {
+                padding: 12px 10px;
+            }
+
+            .info-card-icon {
+                font-size: 1.3rem;
+                margin-bottom: 4px;
+            }
+
+            .info-card-title {
+                font-size: 0.7rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="main-card">
+            <div class="logo">
+                <img src="logo.jpg" alt="КСТ">
+            </div>
+            <h1>Начать тестирование</h1>
+            <p class="subtitle">Введите код теста или персональный пароль</p>
+
+            <div id="error-message" class="error-message"></div>
+
+            <form id="code-form">
+                <div class="code-input-wrapper">
+                    <input
+                        type="text"
+                        id="code-input"
+                        class="code-input"
+                        placeholder="00000"
+                        maxlength="8"
+                        inputmode="numeric"
+                        pattern="[0-9]*"
+                        autocomplete="off"
+                        autofocus
+                    >
+                </div>
+                <button type="submit" id="submit-btn" class="submit-btn">
+                    Начать тест
+                </button>
+            </form>
+
+            <div class="info-cards">
+                <div class="info-card" onclick="showModal('test')">
+                    <div class="info-card-icon">✅</div>
+                    <div class="info-card-title">Контрольная</div>
+                </div>
+                <div class="info-card" onclick="showModal('training')">
+                    <div class="info-card-icon">📚</div>
+                    <div class="info-card-title">Тренировка</div>
+                </div>
+                <div class="info-card" onclick="showModal('exam')">
+                    <div class="info-card-icon">📝</div>
+                    <div class="info-card-title">Зачёт</div>
+                </div>
+                <div class="info-card" onclick="showModal('srez')">
+                    <div class="info-card-icon">📊</div>
+                    <div class="info-card-title">Срез</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer">
+            <p>Преподаватель? <a href="index.html">Войти в систему</a></p>
+        </div>
+    </div>
+
+    <!-- Модальное окно: Контрольная работа -->
+    <div class="modal-overlay" id="modal-test" onclick="closeModal(event)">
+        <div class="modal" onclick="event.stopPropagation()">
+            <button class="modal-close" onclick="closeAllModals()">&times;</button>
+            <div class="modal-header">
+                <div class="modal-icon test">✅</div>
+                <div class="modal-title">Контрольная работа</div>
+            </div>
+            <div class="modal-body">
+                <p>Стандартный режим для <span class="highlight">контроля знаний</span> на уроке.</p>
+                <ul>
+                    <li>Введите <strong>6-значный код</strong> теста</li>
+                    <li>Результат сохраняется <strong>автоматически</strong></li>
+                    <li>Можно вернуться к <strong>предыдущим</strong> вопросам</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- Модальное окно: Тренировка -->
+    <div class="modal-overlay" id="modal-training" onclick="closeModal(event)">
+        <div class="modal" onclick="event.stopPropagation()">
+            <button class="modal-close" onclick="closeAllModals()">&times;</button>
+            <div class="modal-header">
+                <div class="modal-icon training">📚</div>
+                <div class="modal-title">Режим тренировки</div>
+            </div>
+            <div class="modal-body">
+                <p>Режим для <span class="highlight">подготовки</span> и самопроверки знаний.</p>
+                <ul>
+                    <li>После ответа видно <strong>правильный вариант</strong></li>
+                    <li>Результаты <strong>не влияют</strong> на оценку</li>
+                    <li>Можно прерваться и <strong>продолжить позже</strong></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- Модальное окно: Зачёт -->
+    <div class="modal-overlay" id="modal-exam" onclick="closeModal(event)">
+        <div class="modal" onclick="event.stopPropagation()">
+            <button class="modal-close" onclick="closeAllModals()">&times;</button>
+            <div class="modal-header">
+                <div class="modal-icon exam">📝</div>
+                <div class="modal-title">Режим зачёта</div>
+            </div>
+            <div class="modal-body">
+                <p>Режим для <span class="highlight">официальной аттестации</span>.</p>
+                <ul>
+                    <li>Введите <strong>5-значный пароль</strong> из карточки</li>
+                    <li>Результат <strong>фиксируется</strong> в журнале</li>
+                    <li>Фиксируются <strong>нарушения</strong></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- Модальное окно: Срез -->
+    <div class="modal-overlay" id="modal-srez" onclick="closeModal(event)">
+        <div class="modal" onclick="event.stopPropagation()">
+            <button class="modal-close" onclick="closeAllModals()">&times;</button>
+            <div class="modal-header">
+                <div class="modal-icon srez">📊</div>
+                <div class="modal-title">Контрольный срез</div>
+            </div>
+            <div class="modal-body">
+                <p>Режим для <span class="highlight">оценки остаточных знаний</span>.</p>
+                <ul>
+                    <li>Введите <strong>5-значный пароль</strong> из карточки</li>
+                    <li>Каждый студент получает свой <strong>вариант</strong></li>
+                    <li>Результат <strong>фиксируется</strong> в журнале</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- Кнопка переключения темы -->
+    <button class="theme-toggle-btn" onclick="toggleTheme()" title=""></button>
+
+    <script>
+        // Dark mode toggle
+        function toggleTheme() {
+            const current = document.documentElement.getAttribute('data-theme');
+            const next = current === 'dark' ? 'light' : 'dark';
+            document.documentElement.setAttribute('data-theme', next);
+            localStorage.setItem('preferred-theme', next);
+            updateThemeIcon();
+        }
+
+        function updateThemeIcon() {
+            const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+            document.querySelectorAll('.theme-toggle-btn').forEach(btn => {
+                btn.textContent = isDark ? '\u2600\uFE0F' : '\uD83C\uDF19';
+                btn.title = isDark ? '\u0421\u0432\u0435\u0442\u043B\u0430\u044F \u0442\u0435\u043C\u0430' : '\u0422\u0451\u043C\u043D\u0430\u044F \u0442\u0435\u043C\u0430';
+            });
+        }
+        updateThemeIcon();
+    </script>
+
+    <script>
+        const API_BASE = 'api';
+
+        function escapeHtml(text) {
+            if (!text) return '';
+            return String(text).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#039;');
+        }
+
+        // Проверка режима техработ
+        async function checkMaintenance() {
+            try {
+                const res = await fetch(`${API_BASE}/maintenance`);
+                const data = await res.json();
+                if (data.enabled) {
+                    const banner = document.createElement('div');
+                    banner.className = 'maintenance-banner';
+                    banner.innerHTML = `⚠️ ${escapeHtml(data.message || 'Ведутся технические работы')}`;
+                    document.body.insertBefore(banner, document.body.firstChild);
+                    document.body.classList.add('maintenance-active');
+                }
+            } catch (e) {
+                console.log('Не удалось проверить режим техработ');
+            }
+        }
+
+        // Инициализация
+        document.addEventListener('DOMContentLoaded', () => {
+            checkMaintenance();
+
+            const codeInput = document.getElementById('code-input');
+            const form = document.getElementById('code-form');
+
+            // Только цифры
+            codeInput.addEventListener('input', (e) => {
+                e.target.value = e.target.value.replace(/\D/g, '');
+            });
+
+            // Отправка формы
+            form.addEventListener('submit', handleSubmit);
+
+            // Закрытие модалок по Escape
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape') closeAllModals();
+            });
+
+            // Проверяем, есть ли активная сессия (перенаправление после обновления)
+            checkActiveSession();
+        });
+
+        // Показываем подсказку если есть незавершённая сессия
+        function checkActiveSession() {
+            try {
+                const saved = localStorage.getItem('kst_active_test');
+                if (!saved) return;
+
+                const savedTest = JSON.parse(saved);
+                if (!savedTest.isExamMode || !savedTest.examPassword) return;
+
+                const now = Date.now();
+                const timeRemaining = savedTest.endTime - now;
+
+                if (timeRemaining > 0) {
+                    // Есть активная сессия с оставшимся временем — показываем подсказку
+                    const minutes = Math.floor(timeRemaining / 60000);
+                    const seconds = Math.floor((timeRemaining % 60000) / 1000);
+                    const studentName = `${savedTest.studentSurname || ''} ${savedTest.studentName || ''}`.trim();
+
+                    const hint = document.createElement('div');
+                    hint.className = 'resume-hint';
+                    hint.innerHTML = `
+                        <div style="background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 12px; padding: 16px; margin-bottom: 20px; text-align: left;">
+                            <div style="font-weight: 600; color: #1d4ed8; margin-bottom: 6px;">У вас есть незавершённый тест</div>
+                            <div style="color: #374151; font-size: 0.9rem;">
+                                ${studentName ? '<div>Студент: ' + studentName + '</div>' : ''}
+                                <div>Осталось времени: <strong>${minutes}:${seconds.toString().padStart(2, '0')}</strong></div>
+                                <div style="margin-top: 8px; color: #6b7280;">Введите ваш персональный код для продолжения</div>
+                            </div>
+                        </div>
+                    `;
+
+                    const errorEl = document.getElementById('error-message');
+                    errorEl.parentNode.insertBefore(hint, errorEl);
+                } else {
+                    // Время истекло — автоотправка результатов
+                    submitExpiredSession(savedTest);
+                }
+            } catch (e) {
+                console.error('Ошибка проверки активной сессии:', e);
+            }
+        }
+
+        async function handleSubmit(e) {
+            e.preventDefault();
+
+            const code = document.getElementById('code-input').value.trim();
+            const btn = document.getElementById('submit-btn');
+            const errorEl = document.getElementById('error-message');
+
+            if (!code || code.length < 5) {
+                showError('Введите код (минимум 5 цифр)');
+                return;
+            }
+
+            btn.classList.add('loading');
+            btn.disabled = true;
+            errorEl.classList.remove('show');
+
+            // Проверяем, есть ли активная сессия в localStorage для этого кода
+            const resumeResult = await checkAndResumeSession(code);
+            if (resumeResult === 'resumed') {
+                // Сессия восстановлена, перенаправление уже произошло
+                return;
+            } else if (resumeResult === 'expired') {
+                // Время истекло, результаты отправлены
+                btn.classList.remove('loading');
+                btn.disabled = false;
+                return;
+            }
+
+            try {
+                // Универсальная проверка - поддерживает и 5-значные пароли участников и 6+ значные коды тестов
+                const response = await fetch(`${API_BASE}/public/universal-check`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ code })
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    // БЕЗОПАСНОСТЬ: передаём код через sessionStorage, а НЕ через URL
+                    if (result.secureCode) {
+                        sessionStorage.setItem('secureExamCode', result.secureCode);
+                    }
+                    // Перенаправляем на нужную страницу (без кода в URL!)
+                    window.location.href = result.redirectUrl;
+                } else {
+                    showError(result.error || 'Код не найден');
+                }
+            } catch (error) {
+                showError('Ошибка соединения с сервером');
+            } finally {
+                btn.classList.remove('loading');
+                btn.disabled = false;
+            }
+        }
+
+        // Проверка и восстановление активной сессии теста
+        async function checkAndResumeSession(code) {
+            try {
+                const saved = localStorage.getItem('kst_active_test');
+                console.log('[RESUME-START] saved exists:', !!saved);
+                if (!saved) return 'none';
+
+                const savedTest = JSON.parse(saved);
+                console.log('[RESUME-START] isExamMode:', savedTest.isExamMode, 'examPassword:', savedTest.examPassword, 'code:', code, 'testLink:', savedTest.testLink, 'testId:', savedTest.testId);
+
+                // Проверяем, что это exam-режим и код совпадает
+                if (!savedTest.isExamMode) { console.log('[RESUME-START] not exam mode'); return 'none'; }
+                if (!savedTest.examPassword) { console.log('[RESUME-START] no examPassword'); return 'none'; }
+                if (String(savedTest.examPassword) !== String(code)) { console.log('[RESUME-START] password mismatch'); return 'none'; }
+
+                // Вычисляем оставшееся время
+                const now = Date.now();
+                const timeRemaining = savedTest.endTime - now;
+
+                if (timeRemaining <= 0) {
+                    // Время истекло — отправляем результаты и очищаем сессию
+                    await submitExpiredSession(savedTest);
+                    return 'expired';
+                }
+
+                // Время ещё есть — перенаправляем на страницу теста для восстановления
+                let link = savedTest.testLink || '';
+
+                // Если testLink не сохранён — получаем с сервера по testId
+                if (!link && savedTest.testId) {
+                    try {
+                        const resp = await fetch(`${API_BASE}/public/test-link`, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ testId: savedTest.testId })
+                        });
+                        const res = await resp.json();
+                        if (res.success && res.testLink) {
+                            link = res.testLink;
+                            // Сохраняем для будущих resume
+                            savedTest.testLink = link;
+                            localStorage.setItem('kst_active_test', JSON.stringify(savedTest));
+                        }
+                    } catch (e) {
+                        console.error('Ошибка получения testLink:', e);
+                    }
+                }
+
+                if (!link) return 'none';
+                window.location.href = `/test/${link}?exam=1&resume=1`;
+                return 'resumed';
+            } catch (e) {
+                console.error('Ошибка проверки сессии:', e);
+                return 'none';
+            }
+        }
+
+        // Отправка результатов истёкшей сессии на сервер
+        async function submitExpiredSession(savedTest) {
+            const answersMap = savedTest.answers || {};
+            const questionIds = savedTest.questions ? savedTest.questions.map(q => q.id) : [];
+            const timeTaken = savedTest.timeLimit || 0;
+            const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+
+            const submitData = {
+                testId: savedTest.testId,
+                studentName: savedTest.studentName,
+                studentSurname: savedTest.studentSurname,
+                studentGroup: savedTest.studentGroup,
+                answers: answersMap,
+                questionIds: questionIds,
+                questionTimes: savedTest.questionTimes || {},
+                timeTaken: timeTaken,
+                tabSwitchCount: savedTest.tabSwitchCount || 0,
+                fullscreenExitCount: savedTest.fullscreenExitCount || 0,
+                screenshotAttempts: savedTest.screenshotAttempts || 0,
+                violations: savedTest.violations || [],
+                penalties: savedTest.penalties || [],
+                deviceType: isMobile ? 'mobile' : 'desktop',
+                isExamMode: savedTest.isExamMode || false,
+                participantId: savedTest.participantId || null,
+                autoSubmitted: true
+            };
+
+            try {
+                const response = await fetch('api/public/submit', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(submitData)
+                });
+
+                if (response.ok) {
+                    console.log('Результаты истёкшей сессии отправлены');
+                    localStorage.removeItem('kst_active_test');
+                } else {
+                    // Сохраняем для повторной отправки чтобы не потерять результаты
+                    localStorage.setItem('pending_submit', JSON.stringify(submitData));
+                    localStorage.removeItem('kst_active_test');
+                }
+            } catch (e) {
+                console.error('Ошибка отправки результатов истёкшей сессии:', e);
+                // Сохраняем для повторной отправки чтобы не потерять результаты
+                localStorage.setItem('pending_submit', JSON.stringify(submitData));
+                localStorage.removeItem('kst_active_test');
+            }
+
+            // Показываем сообщение
+            showError('Время теста истекло. Результаты отправлены преподавателю. Вы не можете продолжить попытку.');
+        }
+
+        function showError(message) {
+            const errorEl = document.getElementById('error-message');
+            errorEl.textContent = message;
+            errorEl.classList.add('show');
+        }
+
+        function showModal(type) {
+            const modal = document.getElementById(`modal-${type}`);
+            if (modal) {
+                modal.classList.add('active');
+                document.body.style.overflow = 'hidden';
+            }
+        }
+
+        function closeModal(event) {
+            if (event.target.classList.contains('modal-overlay')) {
+                event.target.classList.remove('active');
+                document.body.style.overflow = '';
+            }
+        }
+
+        function closeAllModals() {
+            document.querySelectorAll('.modal-overlay').forEach(m => {
+                m.classList.remove('active');
+            });
+            document.body.style.overflow = '';
+        }
+    </script>
+</body>
+</html>
