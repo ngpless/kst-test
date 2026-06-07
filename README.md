@@ -19,14 +19,21 @@
 
 ## 📸 Screenshots
 
+<div align="center">
+  <img src="docs/screenshots/test-question.png" alt="Taking a test — question with answer options, timer, progress and anti-cheat watermark" width="90%" />
+  <br/><sub><b>Taking a test</b> — single/multiple choice, live timer, question navigator, progress bar and per-student anti-cheat watermark</sub>
+</div>
+
+<br/>
+
 <table>
   <tr>
+    <td width="50%"><img src="docs/screenshots/test-intro.png" alt="Test intro with grading criteria" /><br/><sub><b>Before the test</b> — grading scale, time limit, mode info and student details form</sub></td>
     <td width="50%"><img src="docs/screenshots/start.png" alt="Student start screen with test modes" /><br/><sub><b>Student entry</b> — enter a test code; pick Quiz / Practice / Exam / Knowledge-check</sub></td>
-    <td width="50%"><img src="docs/screenshots/exam.png" alt="Exam entry screen" /><br/><sub><b>Exam mode</b> — focused dark UI, 5-digit access code from the teacher's card</sub></td>
   </tr>
   <tr>
-    <td width="50%"><img src="docs/screenshots/landing.png" alt="Teacher login" /><br/><sub><b>Teacher login</b> — access to the admin panel</sub></td>
-    <td width="50%" align="center"><img src="docs/screenshots/start-mobile.png" alt="Mobile responsive view" width="55%" /><br/><sub><b>Mobile</b> — fully responsive for phones in the classroom</sub></td>
+    <td width="50%"><img src="docs/screenshots/exam.png" alt="Exam entry screen" /><br/><sub><b>Exam mode</b> — focused dark UI, 5-digit access code from the teacher's card</sub></td>
+    <td width="50%" align="center"><img src="docs/screenshots/start-mobile.png" alt="Mobile responsive view" width="52%" /><br/><sub><b>Mobile</b> — fully responsive for phones in the classroom</sub></td>
   </tr>
 </table>
 
