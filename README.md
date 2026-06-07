@@ -37,6 +37,13 @@ vendor lock-in — everything runs on Node.js + PostgreSQL on your own server.
 - 📊 **Results & analytics** — per-student and per-group reporting, export
 - ⚡ **Production-ready** — PM2 cluster (4 workers), `helmet`, `compression`, graceful shutdown
 
+### Adoption
+
+The platform has been used in production by **~1,000 students** taking real tests
+and exams at a vocational college. It was developed and rolled out locally
+inside the institution first — hence few GitHub stars so far — and is now being
+open-sourced so other education providers can self-host it.
+
 ### Quick start
 
 ```bash
@@ -101,6 +108,13 @@ commit a real `.env`; use `.env.example` as the template.
 - 📶 Офлайн-режим (Service Worker + IndexedDB) для слабого Wi-Fi
 - 📊 Аналитика и выгрузка результатов
 - ⚡ Production-готовность: PM2-кластер (4 воркера), helmet, сжатие, graceful shutdown
+
+### Применение
+
+Через систему уже прошло **около 1000 студентов** — реальные тесты и экзамены в
+колледже. Платформа сначала развивалась и внедрялась локально внутри учреждения
+(поэтому звёзд на GitHub пока мало), а теперь открывается, чтобы её могли
+развернуть у себя другие образовательные организации.
 
 ### Установка
 
