@@ -17,6 +17,23 @@
 
 ---
 
+## 📸 Screenshots
+
+<table>
+  <tr>
+    <td width="50%"><img src="docs/screenshots/start.png" alt="Student start screen with test modes" /><br/><sub><b>Student entry</b> — enter a test code; pick Quiz / Practice / Exam / Knowledge-check</sub></td>
+    <td width="50%"><img src="docs/screenshots/exam.png" alt="Exam entry screen" /><br/><sub><b>Exam mode</b> — focused dark UI, 5-digit access code from the teacher's card</sub></td>
+  </tr>
+  <tr>
+    <td width="50%"><img src="docs/screenshots/landing.png" alt="Teacher login" /><br/><sub><b>Teacher login</b> — access to the admin panel</sub></td>
+    <td width="50%" align="center"><img src="docs/screenshots/start-mobile.png" alt="Mobile responsive view" width="55%" /><br/><sub><b>Mobile</b> — fully responsive for phones in the classroom</sub></td>
+  </tr>
+</table>
+
+> 🌐 Try it live: **[kst-test.ru](https://kst-test.ru)**
+
+---
+
 ## English
 
 KST Test is a self-hostable web platform for running online quizzes, exams and
