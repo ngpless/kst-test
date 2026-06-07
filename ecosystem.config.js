@@ -3,16 +3,19 @@ module.exports = {
     name: 'test-system',
     script: 'server-postgres.js',
 
-    // CLUSTER MODE: 4 воркера (оптимизировано для стабильности и безопасности БД)
-    // 4 воркера × 10 соединений к БД = 40 макс соединений (безопасно для PostgreSQL)
-    instances: 4,
-    exec_mode: 'cluster',
+    // ВНИМАНИЕ: режим ОДНОГО процесса (fork) — НЕ cluster!
+    // Модель данных хранит каждую таблицу единым JSON-блобом во ВНУТРИпроцессном кэше,
+    // а блокировки записи (tableLocks) тоже внутрипроцессные. В cluster mode у каждого
+    // воркера свой кэш и свои локи => одновременные сдачи МОЛЧА затирают результаты друг друга.
+    // Не переводить в cluster, пока results не переведён на построчное хранение.
+    instances: 1,
+    exec_mode: 'fork',
 
-    // Автоперезапуск при превышении памяти (1GB на воркер, всего до 4GB)
-    max_memory_restart: '1024M',
+    // Автоперезапуск при превышении памяти
+    max_memory_restart: '1536M',
 
-    // Node.js флаги для управления памятью (1GB heap на воркер)
-    node_args: '--max-old-space-size=1024 --expose-gc',
+    // Node.js флаги для управления памятью
+    node_args: '--max-old-space-size=1536 --expose-gc',
 
     // Переменные окружения (основные credentials в .env файле!)
     env: {
@@ -20,9 +23,9 @@ module.exports = {
       PORT: 3001
     },
 
-    // Логирование
-    error_file: '/root/.pm2/logs/test-system-error.log',
-    out_file: '/root/.pm2/logs/test-system-out.log',
+    // Логирование (процесс работает под пользователем open)
+    error_file: '/home/open/.pm2/logs/test-system-error.log',
+    out_file: '/home/open/.pm2/logs/test-system-out.log',
     log_date_format: 'YYYY-MM-DD HH:mm:ss',
     merge_logs: true,
 

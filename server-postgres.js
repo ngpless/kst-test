@@ -286,7 +286,10 @@ let cacheInitialized = false;
 // (Критично для PM2 cluster mode: каждый воркер имеет свой кэш!)
 // ============================================
 const CACHE_SYNC_INTERVAL = 5000; // 5 секунд
-const CACHE_SYNC_TABLES = ['tests', 'questions', 'exam_participants', 'disciplines', 'groups', 'results'];
+// ПРИМЕЧАНИЕ: 'results' НАМЕРЕННО исключён из частой синхронизации — это самый большой блоб (десятки МБ),
+// и его повторный парсинг каждые 5с впустую блокировал event loop. Запись результатов сразу обновляет кэш,
+// а при единственном инстансе кэш авторитетен. (При переходе в cluster mode нужна построчная модель results.)
+const CACHE_SYNC_TABLES = ['tests', 'questions', 'exam_participants', 'disciplines', 'groups'];
 let lastCacheSyncTime = 0;
 
 async function syncCacheFromDB() {
@@ -404,8 +407,142 @@ async function saveDBSync(table, data) {
     }
 }
 
+// ============================================
+// ПОСТРОЧНОЕ ХРАНЕНИЕ РЕЗУЛЬТАТОВ (нагрузка!)
+// Раньше вся таблица results хранилась одним JSON-блобом (десятки МБ) и переписывалась
+// ЦЕЛИКОМ при каждой сдаче — это не давало держать нагрузку на массовых экзаменах.
+// Теперь каждый результат — отдельная строка results_rows; сдача = одна быстрая вставка.
+// Чтение по-прежнему идёт из in-memory кэша (loadDB('results')), поэтому все читатели не меняются.
+// ============================================
+let resultsRowMode = false; // включается после успешной инициализации таблицы
+
+async function ensureResultsTable() {
+    await pool.query(`
+        CREATE TABLE IF NOT EXISTS results_rows (
+            id TEXT PRIMARY KEY,
+            test_id TEXT,
+            submitted_at TIMESTAMPTZ DEFAULT NOW(),
+            data JSONB NOT NULL
+        )`);
+    await pool.query(`CREATE INDEX IF NOT EXISTS idx_results_rows_test ON results_rows(test_id)`);
+}
+
+// Однократная миграция существующих результатов из старого блоба в строки (идемпотентно)
+async function migrateResultsToRows() {
+    const { rows } = await pool.query('SELECT count(*)::int AS n FROM results_rows');
+    if (rows[0].n > 0) {
+        console.log(`[RESULTS] Построчное хранилище уже заполнено (${rows[0].n} строк) — миграция не нужна`);
+        return;
+    }
+    const legacy = Array.isArray(dataCache['results']) ? dataCache['results'] : [];
+    if (legacy.length === 0) { console.log('[RESULTS] Нет старых результатов для миграции'); return; }
+    const client = await pool.connect();
+    try {
+        await client.query('BEGIN');
+        for (const r of legacy) {
+            await client.query(
+                `INSERT INTO results_rows (id, test_id, submitted_at, data) VALUES ($1,$2,$3,$4)
+                 ON CONFLICT (id) DO NOTHING`,
+                [String(r.id), String(r.testId || ''), r.submittedAt || r.completedAt || new Date().toISOString(), JSON.stringify(r)]
+            );
+        }
+        await client.query('COMMIT');
+        console.log(`[RESULTS] Мигрировано ${legacy.length} результатов в построчное хранилище (старый блоб сохранён как бэкап)`);
+    } catch (e) {
+        await client.query('ROLLBACK');
+        throw e;
+    } finally {
+        client.release();
+    }
+}
+
+async function loadResultsFromRows() {
+    const { rows } = await pool.query('SELECT data FROM results_rows ORDER BY submitted_at ASC');
+    return rows.map(r => (typeof r.data === 'string' ? JSON.parse(r.data) : r.data));
+}
+
+// Вставка ОДНОГО результата (горячий путь сдачи) + обновление кэша. Без переписывания всего блоба.
+async function insertResultRow(result) {
+    await pool.query(
+        `INSERT INTO results_rows (id, test_id, submitted_at, data) VALUES ($1,$2,$3,$4)
+         ON CONFLICT (id) DO UPDATE SET data = $4, test_id = $2, submitted_at = $3`,
+        [String(result.id), String(result.testId || ''), result.submittedAt || result.completedAt || new Date().toISOString(), JSON.stringify(result)]
+    );
+}
+
+// Мьютекс записи результатов: сериализует вставки и ресинк, чтобы они не пересекались
+// (иначе полный ресинк мог бы затронуть строки, добавленные параллельной сдачей).
+let _resultsWriteChain = Promise.resolve();
+function withResultsWrite(fn) {
+    const run = _resultsWriteChain.then(fn, fn);
+    _resultsWriteChain = run.then(() => {}, () => {});
+    return run;
+}
+
+async function appendResult(result) {
+    return withResultsWrite(async () => {
+        if (!Array.isArray(dataCache['results'])) dataCache['results'] = [];
+        if (!dataCache['results'].some(r => String(r.id) === String(result.id))) {
+            dataCache['results'].push(result);
+        }
+        await runResilient(() => insertResultRow(result), 'results_rows.insert');
+        return result;
+    });
+}
+
+// Полная синхронизация строк с переданным массивом (редкий путь: админ удалил/изменил результаты).
+// Сериализуется мьютексом записи, чтобы не пересекаться с параллельными вставками сдач.
+async function resyncResultsRows(arr) {
+  return withResultsWrite(async () => {
+    const ids = arr.map(r => String(r.id));
+    const client = await pool.connect();
+    try {
+        await client.query('BEGIN');
+        if (ids.length > 0) {
+            await client.query('DELETE FROM results_rows WHERE id <> ALL($1::text[])', [ids]);
+        } else {
+            await client.query('DELETE FROM results_rows');
+        }
+        for (const r of arr) {
+            await client.query(
+                `INSERT INTO results_rows (id, test_id, submitted_at, data) VALUES ($1,$2,$3,$4)
+                 ON CONFLICT (id) DO UPDATE SET data = $4, test_id = $2, submitted_at = $3`,
+                [String(r.id), String(r.testId || ''), r.submittedAt || r.completedAt || new Date().toISOString(), JSON.stringify(r)]
+            );
+        }
+        await client.query('COMMIT');
+    } catch (e) {
+        await client.query('ROLLBACK');
+        throw e;
+    } finally {
+        client.release();
+    }
+  });
+}
+
+// Универсальный устойчивый ретрай для произвольной записи
+async function runResilient(fn, label, attempts = 5) {
+    let lastErr;
+    for (let i = 0; i < attempts; i++) {
+        try { return await fn(); }
+        catch (err) {
+            lastErr = err;
+            const delay = Math.min(4000, 400 * Math.pow(2, i));
+            console.error(`[RESILIENT] ${label} ошибка (попытка ${i + 1}/${attempts}): ${err.message}; повтор через ${delay}мс`);
+            await new Promise(r => setTimeout(r, delay));
+        }
+    }
+    throw lastErr;
+}
+
 // Сохранение в PostgreSQL
 async function saveToDB(table, data) {
+    // Результаты хранятся построчно — НЕ переписываем гигантский блоб.
+    // Этот путь срабатывает только на редких админских операциях (удаление/правка результатов).
+    if (table === 'results' && resultsRowMode) {
+        await resyncResultsRows(Array.isArray(data) ? data : []);
+        return;
+    }
     const jsonData = JSON.stringify(data);
     await pool.query(
         `INSERT INTO app_data (store_name, data_key, data, updated_at)
@@ -457,6 +594,28 @@ function releaseTableLock(table) {
     }
 }
 
+// Устойчивая запись в БД: несколько повторов с нарастающей задержкой.
+// Переживает кратковременную недоступность PostgreSQL (рестарт/maintenance),
+// чтобы запись результата не терялась и не превращалась в ошибку 500 для студента.
+async function saveToDBResilient(table, data, attempts = 5) {
+    let lastErr;
+    for (let i = 0; i < attempts; i++) {
+        try {
+            await saveToDB(table, data);
+            if (i > 0) console.log(`[БД RESILIENT] ${table} сохранено с попытки ${i + 1}`);
+            return true;
+        } catch (err) {
+            lastErr = err;
+            const delay = Math.min(4000, 400 * Math.pow(2, i)); // 400, 800, 1600, 3200, 4000 мс
+            console.error(`[БД RESILIENT] Ошибка сохранения ${table} (попытка ${i + 1}/${attempts}): ${err.message}; повтор через ${delay}мс`);
+            await new Promise(r => setTimeout(r, delay));
+        }
+    }
+    // Данные уже в кэше (dataCache обновлён вызывающим кодом) — они сохранятся при следующей успешной записи
+    // или периодическим флэшем. Бросаем, чтобы вызывающий мог решить, как реагировать.
+    throw lastErr;
+}
+
 // Атомарное добавление элемента в таблицу (защита от гонки данных)
 async function addToTable(table, item) {
     await acquireTableLock(table);
@@ -464,7 +623,7 @@ async function addToTable(table, item) {
         const data = loadDB(table);
         data.push(item);
         dataCache[table] = data;
-        await saveToDB(table, data);
+        await saveToDBResilient(table, data);
         return item;
     } finally {
         releaseTableLock(table);
@@ -1647,8 +1806,8 @@ function prepareQuestionForClient(q, isTrainingMode) {
 function gradeAnswer(question, userAnswer) {
     const questionType = question.type || 'single';
     if (questionType === 'match') {
-        if (userAnswer && typeof userAnswer === 'object') {
-            const correctPairs = question.correct;
+        const correctPairs = question.correct;
+        if (userAnswer && typeof userAnswer === 'object' && correctPairs && typeof correctPairs === 'object') {
             return Object.keys(correctPairs).every(key => String(userAnswer[key]) === String(correctPairs[key]));
         }
         return false;
@@ -1656,7 +1815,7 @@ function gradeAnswer(question, userAnswer) {
         if (userAnswer) {
             const correctAnswers = question.correctAnswers
                 || (Array.isArray(question.correct) ? question.correct : [question.correct]);
-            return correctAnswers.some(ans => ans && ans.toLowerCase() === String(userAnswer).trim().toLowerCase());
+            return correctAnswers.some(ans => ans != null && String(ans).toLowerCase() === String(userAnswer).trim().toLowerCase());
         }
         return false;
     } else if (questionType === 'multiple') {
@@ -1674,7 +1833,9 @@ function gradeAnswer(question, userAnswer) {
         }
         return false;
     } else {
-        return userAnswer && question.correct === userAnswer;
+        // single: correct может храниться строкой-буквой ИЛИ массивом из одной буквы
+        const correctVal = Array.isArray(question.correct) ? question.correct[0] : question.correct;
+        return userAnswer != null && correctVal != null && String(correctVal) === String(userAnswer);
     }
 }
 
@@ -3826,9 +3987,8 @@ async function handleAPI(method, pathname, body, token, query, clientIp = 'unkno
     }
 
     if (pathname === '/api/public/submit' && method === 'POST') {
-        console.log('[SUBMIT] Получен запрос на отправку результатов');
-        console.log('[SUBMIT] testId:', body.testId);
-        console.log('[SUBMIT] studentName:', body.studentName, body.studentSurname);
+        // Не логируем ПДн (ФИО) в обычные логи — только техн. идентификатор теста (152-ФЗ/приватность)
+        console.log('[SUBMIT] Получен запрос на отправку результатов, testId:', body.testId);
 
         let {
             testId, studentName, studentSurname, studentPatronymic, studentGroup, answers, questionTimes, timeTaken,
@@ -3923,8 +4083,8 @@ async function handleAPI(method, pathname, body, token, query, clientIp = 'unkno
                 let userAnswerText = '-', correctAnswerText = '';
 
                 if (questionType === 'match') {
-                    if (userAnswer && typeof userAnswer === 'object') {
-                        const correctPairs = question.correct;
+                    const correctPairs = question.correct;
+                    if (userAnswer && typeof userAnswer === 'object' && correctPairs && typeof correctPairs === 'object') {
                         isCorrect = Object.keys(correctPairs).every(key => String(userAnswer[key]) === String(correctPairs[key]));
                         // Формируем текст ответа для match
                         if (question.pairs) {
@@ -3946,7 +4106,7 @@ async function handleAPI(method, pathname, body, token, query, clientIp = 'unkno
                         // correctAnswers (массив допустимых ответов) имеет приоритет над correct
                         const correctAnswers = question.correctAnswers
                             || (Array.isArray(question.correct) ? question.correct : [question.correct]);
-                        isCorrect = correctAnswers.some(ans => ans && ans.toLowerCase() === userAnswer.trim().toLowerCase());
+                        isCorrect = correctAnswers.some(ans => ans != null && String(ans).toLowerCase() === String(userAnswer).trim().toLowerCase());
                         userAnswerText = userAnswer;
                         correctAnswerText = correctAnswers[0] || '';
                     }
@@ -3982,9 +4142,11 @@ async function handleAPI(method, pathname, body, token, query, clientIp = 'unkno
                         }
                     }
                 } else {
-                    isCorrect = userAnswer && question.correct === userAnswer;
+                    // single: correct может быть строкой-буквой или массивом из одной буквы
+                    const correctVal = Array.isArray(question.correct) ? question.correct[0] : question.correct;
+                    isCorrect = userAnswer != null && correctVal != null && String(correctVal) === String(userAnswer);
                     const userAnswerObj = question.answers?.find(a => a.letter === userAnswer);
-                    const correctAnswerObj = question.answers?.find(a => a.letter === question.correct);
+                    const correctAnswerObj = question.answers?.find(a => a.letter === correctVal);
                     userAnswerText = userAnswerObj?.text || '-';
                     correctAnswerText = correctAnswerObj?.text || '';
                 }
@@ -4038,17 +4200,28 @@ async function handleAPI(method, pathname, body, token, query, clientIp = 'unkno
                 variant: variant, submissionId: submissionId || null
             };
 
-            // Атомарное добавление результата (защита от гонки данных при массовой сдаче)
-            await addToTable('results', newResult);
+            // Атомарное добавление результата (защита от гонки данных при массовой сдаче).
+            // Если БД недоступна дольше, чем все повторы — результат уже лежит в кэше (addToTable
+            // обновляет dataCache до записи) и будет сохранён при следующей успешной записи/флэше.
+            // Поэтому НЕ роняем сдачу студента в 500 — фиксируем критическую ошибку и продолжаем.
+            // Построчная вставка результата (быстро, без переписывания блоба) с устойчивым ретраем.
+            // Если БД недоступна дольше всех повторов — результат уже в кэше (appendResult кладёт его
+            // в кэш до записи), поэтому НЕ роняем сдачу студента в 500; он сохранится при ресинке/следующей записи.
+            try {
+                await appendResult(newResult);
+            } catch (saveErr) {
+                console.error(`[КРИТИЧНО] Результат ${newResult.id} не записан в БД (БД недоступна), но сохранён в кэше: ${saveErr.message}`);
+                if (!Array.isArray(dataCache['results'])) dataCache['results'] = [];
+                if (!dataCache['results'].some(r => r.id === newResult.id)) dataCache['results'].push(newResult);
+            }
 
             // Telegram и обновление участников — только для НЕ-тренировочных тестов
             if (!test.isTrainingMode) {
-                // Отправляем Telegram уведомление создателю теста (передаём полный результат с details)
-                try {
-                    await notifyTestResult(testId, newResult);
-                } catch (telegramErr) {
-                    console.error('[TELEGRAM] Ошибка отправки уведомления:', telegramErr.message);
-                }
+                // Telegram-уведомление преподавателю — НЕ блокируем ответ студенту (fire-and-forget).
+                // Отправка может занимать секунды (внешний HTTPS), и студент не должен этого ждать —
+                // иначе под нагрузкой каждая сдача висит до таймаута уведомления.
+                notifyTestResult(testId, newResult).catch(telegramErr =>
+                    console.error('[TELEGRAM] Ошибка отправки уведомления:', telegramErr.message));
 
                 // Обновляем статус участника
                 if (participantId && isExamMode) {
@@ -5237,9 +5410,22 @@ const server = http.createServer(async (req, res) => {
         return;
     }
 
-    // Блокируем доступ к .env и другим чувствительным файлам
+    // Блокируем доступ к .env, исходникам сервера, бэкапам и другим чувствительным файлам.
+    // ВАЖНО: клиентский JS живёт только в /js/ и sw.js — всё остальное серверное/чувствительное закрываем.
     const basename = path.basename(filePath);
-    if (basename === '.env' || basename === '.gitignore' || basename.startsWith('.') || basename === 'ecosystem.config.js' || basename === 'package.json' || basename === 'package-lock.json' || basename === 'node_modules') {
+    const lowerName = basename.toLowerCase();
+    const blockedNames = new Set([
+        '.env', '.gitignore', 'ecosystem.config.js', 'package.json', 'package-lock.json',
+        'node_modules', 'server-postgres.js', 'proxy3000.js', 'init-db.sql'
+    ]);
+    const blockedExts = new Set(['.sql', '.sh', '.bat', '.md', '.dump', '.tgz', '.gz', '.zip', '.log', '.bak', '.env']);
+    const isBlocked =
+        basename.startsWith('.') ||                 // dot-файлы (.env, .gitignore, ...)
+        blockedNames.has(basename) ||
+        blockedExts.has(path.extname(lowerName)) ||  // исходники БД, скрипты, дампы, логи
+        lowerName.includes('.backup') ||             // *.backup, *.html.backup.pre-pwa и т.п.
+        lowerName.endsWith('~');
+    if (isBlocked) {
         res.writeHead(403, { 'Content-Type': 'text/html; charset=utf-8' });
         res.end('<h1>403 - Доступ запрещён</h1>');
         return;
@@ -5318,6 +5504,19 @@ async function startServer() {
 
         // Загружаем данные в кэш
         await initCache();
+
+        // Построчное хранилище результатов (нагрузка): таблица + однократная миграция + загрузка кэша из строк
+        try {
+            await ensureResultsTable();
+            await migrateResultsToRows();
+            dataCache['results'] = await loadResultsFromRows();
+            resultsRowMode = true;
+            console.log(`[RESULTS] Построчный режим включён, в кэше ${dataCache['results'].length} результатов`);
+        } catch (e) {
+            // Безопасный фолбэк: если что-то не так — остаёмся на старом блобе (results из initCache)
+            resultsRowMode = false;
+            console.error('[RESULTS] Не удалось включить построчный режим, остаёмся на старом блобе:', e.message);
+        }
 
         // Миграция: добавляем shortCode ко всем тестам без него
         const tests = loadDB('tests');
