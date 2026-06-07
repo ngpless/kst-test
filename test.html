@@ -2190,8 +2190,8 @@
                     </ul>
                 </div>
 
-                <div class="penalty-info">
-                    <strong>Штраф за нарушение: -<span id="penalty-time">3</span> мин</strong>
+                <div class="penalty-info" style="display:none">
+                    <strong>Штраф за нарушение: -<span id="penalty-time">0</span> мин</strong>
                 </div>
 
                 <div class="student-form-section">
@@ -2926,7 +2926,13 @@
             document.getElementById('test-discipline').textContent = testData.disciplineName || '';
             document.getElementById('test-time').textContent = testData.timeLimit;
             document.getElementById('test-questions').textContent = testData.adaptiveMode ? ('~' + testData.questionsCount) : testData.questionsCount;
-            document.getElementById('penalty-time').textContent = testData.penaltyTime || 3;
+            (function () {
+                var pt = Number(testData.penaltyTime) || 0;
+                var el = document.getElementById('penalty-time');
+                var box = el ? el.closest('.penalty-info') : null;
+                if (pt > 0) { if (el) el.textContent = pt; if (box) box.style.display = ''; }
+                else if (box) { box.style.display = 'none'; } // штраф по времени выключен — не показываем
+            })();
 
             const total = testData.questionsCount;
             const gs = testData.gradeScale || { grade5: 90, grade4: 75, grade3: 51 };
@@ -2974,7 +2980,13 @@
             document.getElementById('test-discipline').textContent = testData.disciplineName || '';
             document.getElementById('test-time').textContent = testData.timeLimit;
             document.getElementById('test-questions').textContent = testData.adaptiveMode ? ('~' + testData.questionsCount) : testData.questionsCount;
-            document.getElementById('penalty-time').textContent = testData.penaltyTime || 3;
+            (function () {
+                var pt = Number(testData.penaltyTime) || 0;
+                var el = document.getElementById('penalty-time');
+                var box = el ? el.closest('.penalty-info') : null;
+                if (pt > 0) { if (el) el.textContent = pt; if (box) box.style.display = ''; }
+                else if (box) { box.style.display = 'none'; } // штраф по времени выключен — не показываем
+            })();
 
             const total = testData.questionsCount;
             const gs = testData.gradeScale || { grade5: 90, grade4: 75, grade3: 51 };
@@ -3085,7 +3097,8 @@
             state.testId = testData.id;
             state.testName = testData.name;
             state.timeLimit = testData.timeLimit * 60;
-            state.penaltyTime = (testData.penaltyTime || 3) * 60;
+            // По умолчанию штраф по времени ВЫКЛЮЧЕН (0). Вычитается, только если преподаватель задал >0.
+            state.penaltyTime = (Number(testData.penaltyTime) || 0) * 60;
             state.questionTimeLimit = testData.questionTimeLimit || 0;
             state.isTrainingMode = testData.isTrainingMode || false;
             state.hideResults = testData.hideResults || false;

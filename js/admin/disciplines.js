@@ -1389,8 +1389,9 @@ function renderTestsView(container) {
                                     <input type="number" id="test-questions-count" value="10" min="1" max="200">
                                 </div>
                                 <div class="form-group">
-                                    <label>Штраф</label>
+                                    <label>Штраф по времени за нарушение (мин)</label>
                                     <input type="number" id="test-penalty" value="0" min="0" max="10">
+                                    <small style="display:block;color:#6b7280;margin-top:4px;font-size:12px">0 = не вычитать время (по умолчанию)</small>
                                 </div>
                             </div>
 
@@ -2089,7 +2090,7 @@ async function saveTest(e) {
         password: passwordValue || null,
         timeLimit: parseInt(document.getElementById('test-time').value),
         questionsCount: parseInt(document.getElementById('test-questions-count').value),
-        penaltyTime: parseInt(document.getElementById('test-penalty').value),
+        penaltyTime: parseInt(document.getElementById('test-penalty').value) || 0,
         questionTimeLimit: parseInt(document.getElementById('test-question-time-limit').value) || 0,
         isTrainingMode: document.getElementById('test-training-mode').checked,
         isExamMode: isExamMode,
