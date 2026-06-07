@@ -1,62 +1,121 @@
-# KST Test — система тестирования студентов
+<div align="center">
 
-Веб-платформа для проведения онлайн-тестов, экзаменов и срезов знаний.
-Node.js + PostgreSQL, серверный рендеринг тестов, админ-панель, экзаменационный
-режим и офлайн-кэш для нестабильного интернета.
+# 🎓 KST Test
 
-## Возможности
+**Open-source online testing & examination platform for vocational education**
+**Открытая платформа онлайн-тестирования и экзаменов для СПО**
 
-- Создание и проведение тестов, экзаменов (`exam.html`) и срезов (`srez.html`)
-- Админ-панель управления (`admin.html`)
-- Хранение результатов в PostgreSQL
-- Офлайн-режим через Service Worker (`sw.js`, `js/offline-db.js`)
-- Запуск в кластере PM2 (4 воркера) с graceful shutdown
+[![Live Demo](https://img.shields.io/badge/demo-kst--test.ru-2ea44f?style=flat-square)](https://kst-test.ru)
+[![Node.js](https://img.shields.io/badge/Node.js-%3E%3D14-339933?style=flat-square&logo=node.js&logoColor=white)](https://nodejs.org)
+[![PostgreSQL](https://img.shields.io/badge/PostgreSQL-336791?style=flat-square&logo=postgresql&logoColor=white)](https://www.postgresql.org)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg?style=flat-square)](./LICENSE)
+[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](#contributing)
 
-## Технологии
+**[🌐 Live demo](https://kst-test.ru)** · [Features](#features) · [Quick start](#quick-start) · [Architecture](#architecture)
 
-- **Backend:** Node.js (>=14), `pg`, `helmet`, `compression`, `dotenv`
-- **Process manager:** PM2 (`ecosystem.config.js`)
-- **БД:** PostgreSQL (схема — `init-db.sql`)
-- **Frontend:** статические HTML + JS (без сборки)
+</div>
 
-## Установка
+---
+
+## English
+
+KST Test is a self-hostable web platform for running online quizzes, exams and
+knowledge checks in vocational colleges and schools. It is used in real
+coursework: students take server-graded tests, teachers manage question banks
+and monitor live exam sessions from an admin panel, and the app keeps working
+through an **offline mode** when classroom networks drop.
+
+It gives education providers a free alternative to paid LMS exam tools, with no
+vendor lock-in — everything runs on Node.js + PostgreSQL on your own server.
+
+### Features
+
+- 📝 **Tests, exams & knowledge checks** — three assessment modes (`test.html`, `exam.html`, `srez.html`)
+- 🧑‍🏫 **Admin panel** — question banks, groups, disciplines, results, live monitoring (`admin.html`)
+- 🛡️ **Server-side grading** — answers are validated on the server, not in the browser
+- 📶 **Offline-first** — Service Worker + IndexedDB cache survive flaky classroom Wi-Fi
+- 📊 **Results & analytics** — per-student and per-group reporting, export
+- ⚡ **Production-ready** — PM2 cluster (4 workers), `helmet`, `compression`, graceful shutdown
+
+### Quick start
 
 ```bash
-# 1. Зависимости
+git clone https://github.com/ngpless/kst-test.git
+cd kst-test
 npm install
 
-# 2. Конфигурация
-cp .env.example .env
-# отредактируйте .env — укажите доступ к БД и пароль администратора
-
-# 3. Инициализация базы
+cp .env.example .env          # set DB credentials and admin password
 psql -U <user> -d <db> -f init-db.sql
 
-# 4. Запуск
-npm start          # обычный запуск
-npm run pm2        # запуск под PM2 (production)
+npm start                     # dev
+npm run pm2                   # production (PM2 cluster)
 ```
 
-## Структура
+### Architecture
 
-| Файл / папка          | Назначение                                   |
-|-----------------------|----------------------------------------------|
-| `server-postgres.js`  | Основной сервер (API + раздача страниц)       |
-| `index.html`          | Точка входа / лендинг                          |
-| `start.html`          | Старт прохождения теста                        |
-| `test.html`           | Прохождение теста                              |
-| `exam.html`           | Экзаменационный режим                          |
-| `srez.html`           | Срез знаний                                    |
-| `admin.html`          | Админ-панель                                   |
-| `js/`                 | Клиентские скрипты (в т.ч. офлайн-БД)          |
-| `init-db.sql`         | Схема базы данных                              |
-| `ecosystem.config.js` | Конфигурация PM2                               |
-| `proxy3000.js`        | Лёгкий прокси                                  |
+| File / dir            | Purpose                                       |
+|-----------------------|-----------------------------------------------|
+| `server-postgres.js`  | Main server — REST API + page serving         |
+| `index.html`          | Entry / landing                               |
+| `start.html`          | Test start screen                             |
+| `test.html`           | Test runner                                   |
+| `exam.html`           | Proctored exam mode                           |
+| `srez.html`           | Knowledge-check mode                          |
+| `admin.html` + `js/admin/` | Admin panel (modular client scripts)     |
+| `js/offline-db.js`    | Offline IndexedDB layer                       |
+| `sw.js`               | Service Worker (offline cache)                |
+| `init-db.sql`         | Database schema                               |
+| `ecosystem.config.js` | PM2 cluster configuration                     |
 
-## Переменные окружения
+**Stack:** Node.js (≥14), `pg`, `helmet`, `compression`, `dotenv`, PostgreSQL, PM2.
 
-См. `.env.example`. Реальный `.env` в репозиторий не коммитится.
+### Configuration
 
-## Лицензия
+All secrets live in `.env` (never committed — see `.env.example`):
+database connection, server port, allowed origin (CORS), admin credentials.
 
-MIT
+### Contributing
+
+Contributions are welcome — open an issue or a pull request. Please don't
+commit a real `.env`; use `.env.example` as the template.
+
+### License
+
+[MIT](./LICENSE) © 2026 ngpless
+
+---
+
+## Русский
+
+**KST Test** — открытая платформа онлайн-тестирования для учреждений СПО:
+тесты, экзамены и срезы знаний с серверной проверкой ответов, админ-панелью и
+офлайн-режимом для нестабильного интернета в учебных аудиториях. Применяется в
+реальном учебном процессе (Node.js + PostgreSQL, кластер PM2). Это бесплатная,
+самостоятельно разворачиваемая альтернатива платным экзаменационным LMS.
+
+### Возможности
+
+- 📝 Три режима оценивания: тест, экзамен, срез знаний
+- 🧑‍🏫 Админ-панель: банки вопросов, группы, дисциплины, результаты, онлайн-мониторинг экзамена
+- 🛡️ Серверная проверка ответов (защита от подмены в браузере)
+- 📶 Офлайн-режим (Service Worker + IndexedDB) для слабого Wi-Fi
+- 📊 Аналитика и выгрузка результатов
+- ⚡ Production-готовность: PM2-кластер (4 воркера), helmet, сжатие, graceful shutdown
+
+### Установка
+
+```bash
+git clone https://github.com/ngpless/kst-test.git
+cd kst-test
+npm install
+cp .env.example .env          # укажите доступ к БД и пароль администратора
+psql -U <user> -d <db> -f init-db.sql
+npm start                     # запуск
+npm run pm2                   # production под PM2
+```
+
+🌐 **Живое демо: [kst-test.ru](https://kst-test.ru)**
+
+### Лицензия
+
+[MIT](./LICENSE) © 2026 ngpless
