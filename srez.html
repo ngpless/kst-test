@@ -801,6 +801,7 @@
                 testLink: testData.link,
                 isExamMode: true,
                 isAdminSrezMode: true,
+                examSessionToken: (srezData && srezData.examSessionToken) || '', // HMAC-подпись сессии (аудит 2026-06-10): без неё сервер понижал срез-результат и не отмечал участника
                 examPassword: currentPassword, // Пароль для восстановления сессии
                 variant: participantData.variant,
                 studentName: participantData.name,
