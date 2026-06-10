@@ -39,6 +39,9 @@ process.on('unhandledRejection', (reason, promise) => {
 // КОНФИГУРАЦИЯ
 // ============================================
 const PORT = process.env.PORT || 3000;
+// Слушаем только localhost: наружу ходит nginx (proxy_pass 127.0.0.1:3001). Прямой доступ к
+// порту приложения по plain HTTP в обход nginx/TLS закрыт (аудит 2026-06-10). Переопределяется HOST.
+const HOST = process.env.HOST || '127.0.0.1';
 const SESSION_TTL = 4 * 60 * 60 * 1000; // 4 часа (для работы преподавателей в админке)
 
 // ============================================
@@ -2004,6 +2007,22 @@ async function handleAPI(method, pathname, body, token, query, clientIp = 'unkno
     }
     const session = getUserByToken(token);
 
+    // ===== Хелперы контроля доступа по владению тестом (аудит 2026-06-10) =====
+    // canViewTest: чтение данных теста — админ, учебный отдел или владелец-преподаватель.
+    // canManageTest: правка/удаление/сброс — только админ или владелец-преподаватель.
+    function canViewTest(sess, testId) {
+        if (!sess) return false;
+        if (sess.role === 'admin' || sess.role === 'education_dept') return true;
+        const t = loadDB('tests').find(x => String(x.id) === String(testId));
+        return !!(t && String(t.createdBy) === String(sess.userId));
+    }
+    function canManageTest(sess, testId) {
+        if (!sess) return false;
+        if (sess.role === 'admin') return true;
+        const t = loadDB('tests').find(x => String(x.id) === String(testId));
+        return !!(t && String(t.createdBy) === String(sess.userId));
+    }
+
     // ========== AUTH ==========
     if (pathname === '/api/auth/login' && method === 'POST') {
         // Rate limiting
@@ -2091,7 +2110,11 @@ async function handleAPI(method, pathname, body, token, query, clientIp = 'unkno
 
     // ========== USERS ==========
     if (pathname === '/api/users' && method === 'GET') {
-        if (!session) return { success: false, error: 'Не авторизован' };
+        // Список всех учётных записей — только админ/учебный отдел (аудит 2026-06-10):
+        // раньше любой аккаунт мог перечислить логины админов для подбора пароля.
+        if (!session || (session.role !== 'admin' && session.role !== 'education_dept')) {
+            return { success: false, error: 'Нет доступа', statusCode: 403 };
+        }
         const users = loadDB('users').map(u => ({
             id: u.id, username: u.username, role: u.role, name: u.name, email: u.email || '', createdAt: u.createdAt, avatarUrl: u.avatarUrl || null
         }));
@@ -2777,6 +2800,10 @@ async function handleAPI(method, pathname, body, token, query, clientIp = 'unkno
         const results = loadDB('results');
         const result = results.find(r => String(r.id) === id);
         if (!result) return { success: false, error: 'Результат не найден' };
+        // Просмотр результата (с ключом ответов) — только админ/учебный отдел или владелец теста (аудит 2026-06-10).
+        if (!canViewTest(session, result.testId)) {
+            return { success: false, error: 'Нет прав на просмотр этого результата', statusCode: 403 };
+        }
         // Отладка: логируем наличие teacherNotes
         console.log(`[GET /results/${id}] teacherNotes:`, result.teacherNotes ? JSON.stringify(result.teacherNotes) : 'пусто');
         console.log(`[GET /results/${id}] teacherPenaltyCount:`, result.teacherPenaltyCount || 0);
@@ -2864,6 +2891,11 @@ async function handleAPI(method, pathname, body, token, query, clientIp = 'unkno
         const groups = loadDB('groups');
         const group = groups.find(g => String(g.id) === id);
         if (!group) return { success: false, error: 'Группа не найдена' };
+        // Доступ к составу группы — админ/учебный отдел или назначенный преподаватель (аудит 2026-06-10).
+        if (session.role !== 'admin' && session.role !== 'education_dept' &&
+            !(group.assignedTeachers || []).includes(String(session.userId))) {
+            return { success: false, error: 'Нет прав на просмотр этой группы', statusCode: 403 };
+        }
         return { success: true, group };
     }
 
@@ -2900,6 +2932,10 @@ async function handleAPI(method, pathname, body, token, query, clientIp = 'unkno
         if (!session) return { success: false, error: 'Не авторизован' };
         const testId = query.testId;
         if (!testId) return { success: false, error: 'Не указан testId' };
+        // Список участников содержит коды входа — только админ/учебный отдел или владелец теста (аудит 2026-06-10).
+        if (!canViewTest(session, testId)) {
+            return { success: false, error: 'Нет прав на просмотр участников этого теста', statusCode: 403 };
+        }
         const participants = loadDB('exam_participants').filter(p => String(p.testId) === String(testId));
         const results = loadDB('results');
         const enriched = participants.map(p => {
@@ -2918,6 +2954,10 @@ async function handleAPI(method, pathname, body, token, query, clientIp = 'unkno
         if (!session) return { success: false, error: 'Не авторизован' };
         const testId = query.testId;
         if (!testId) return { success: false, error: 'Не указан testId' };
+        // Мониторинг среза — только админ/учебный отдел или владелец теста (аудит 2026-06-10).
+        if (!canViewTest(session, testId)) {
+            return { success: false, error: 'Нет прав на мониторинг этого теста', statusCode: 403 };
+        }
 
         // Получаем участников
         const participants = loadDB('exam_participants').filter(p => String(p.testId) === String(testId));
@@ -2995,6 +3035,10 @@ async function handleAPI(method, pathname, body, token, query, clientIp = 'unkno
         if (!session) return { success: false, error: 'Не авторизован' };
         const { testId, group, maxAttempts, variant, autoDistribute, participants: newParticipants } = body;
         if (!testId || !group || !newParticipants) return { success: false, error: 'Неверные параметры' };
+        // Добавлять участников можно только в свой тест (аудит 2026-06-10).
+        if (!canManageTest(session, testId)) {
+            return { success: false, error: 'Нет прав на изменение участников этого теста', statusCode: 403 };
+        }
 
         // Автосоздание группы или добавление студентов в существующую
         const groupName = group.trim();
@@ -3114,6 +3158,10 @@ async function handleAPI(method, pathname, body, token, query, clientIp = 'unkno
         if (!session) return { success: false, error: 'Не авторизован' };
         const { testId } = body;
         if (!testId) return { success: false, error: 'testId обязателен' };
+        // Сброс участников и удаление результатов — деструктивно, только админ/владелец теста (аудит 2026-06-10).
+        if (!canManageTest(session, testId)) {
+            return { success: false, error: 'Нет прав на сброс участников этого теста', statusCode: 403 };
+        }
 
         let participants = loadDB('exam_participants');
         let results = loadDB('results');
@@ -3165,6 +3213,10 @@ async function handleAPI(method, pathname, body, token, query, clientIp = 'unkno
     // Удаление всех участников по testId
     if (pathname === '/api/exam/participants' && method === 'DELETE' && query.testId) {
         if (!session) return { success: false, error: 'Не авторизован' };
+        // Массовое удаление участников — только админ/владелец теста (аудит 2026-06-10).
+        if (!canManageTest(session, query.testId)) {
+            return { success: false, error: 'Нет прав на удаление участников этого теста', statusCode: 403 };
+        }
         let participants = loadDB('exam_participants');
         const before = participants.length;
         participants = participants.filter(p => String(p.testId) !== String(query.testId));
@@ -3177,6 +3229,11 @@ async function handleAPI(method, pathname, body, token, query, clientIp = 'unkno
         if (!session) return { success: false, error: 'Не авторизован' };
         const id = pathname.split('/')[4];
         let participants = loadDB('exam_participants');
+        // Удаление участника — только админ/владелец теста, к которому он привязан (аудит 2026-06-10).
+        const target = participants.find(p => String(p.id) === id);
+        if (target && !canManageTest(session, target.testId)) {
+            return { success: false, error: 'Нет прав на удаление этого участника', statusCode: 403 };
+        }
         participants = participants.filter(p => String(p.id) !== id);
         saveDB('exam_participants', participants);
         return { success: true };
@@ -3464,6 +3521,7 @@ async function handleAPI(method, pathname, body, token, query, clientIp = 'unkno
             sessionId, testId, answers, currentQuestion, startTime, endTime,
             studentName, studentSurname, studentGroup, participantId, violations,
             tabSwitchCount, fullscreenExitCount, screenshotAttempts, isExamMode,
+            penalties, // штрафы преподавателя/проктора — храним на сервере (аудит 2026-06-10)
             questionIds, variant // Сохраняем только ID вопросов и вариант, не сами вопросы
         } = body;
         if (!sessionId) return { success: false, error: 'sessionId required' };
@@ -3481,6 +3539,13 @@ async function handleAPI(method, pathname, body, token, query, clientIp = 'unkno
             tabSwitchCount: tabSwitchCount || 0,
             fullscreenExitCount: fullscreenExitCount || 0,
             screenshotAttempts: screenshotAttempts || 0,
+            // Штрафы проктора фиксируем монотонно: не даём клиенту «обнулить» уже записанные
+            // (берём более длинный из старого и нового списка). Аудит 2026-06-10.
+            penalties: (() => {
+                const incoming = Array.isArray(penalties) ? penalties : [];
+                const prev = (existing >= 0 && Array.isArray(activeTests[existing].penalties)) ? activeTests[existing].penalties : [];
+                return incoming.length >= prev.length ? incoming : prev;
+            })(),
             isExamMode: isExamMode || false,
             updatedAt: Date.now()
         };
@@ -3997,17 +4062,24 @@ async function handleAPI(method, pathname, body, token, query, clientIp = 'unkno
             ltiSessionId
         } = body;
 
-        // Проверка подписи экзаменной сессии (защита от подмены participantId)
-        if (isExamMode && participantId && examSessionToken) {
-            try {
-                if (!verifyExamSession(participantId, testId, examSessionToken)) {
-                    console.warn('[SECURITY] Невалидная подпись экзаменной сессии:', participantId, testId);
-                    // Не блокируем полностью — сбрасываем participantId чтобы результат сохранился как обычный
-                    participantId = null;
-                    isExamMode = false;
+        // Проверка подписи экзаменной сессии (защита от подмены participantId).
+        // ВАЖНО (аудит 2026-06-10): проверяем при ЛЮБОМ participantId в режиме экзамена.
+        // Раньше при отсутствии examSessionToken проверка пропускалась целиком, и можно было
+        // зачесть результат на чужой participantId без подписи. Теперь отсутствие токена = провал
+        // проверки → понижаем до обычного результата (как и при невалидной подписи).
+        if (isExamMode && participantId) {
+            let sigOk = false;
+            if (examSessionToken) {
+                try {
+                    sigOk = verifyExamSession(participantId, testId, examSessionToken);
+                } catch (e) {
+                    console.warn('[SECURITY] Ошибка проверки подписи:', e.message);
+                    sigOk = false;
                 }
-            } catch (e) {
-                console.warn('[SECURITY] Ошибка проверки подписи:', e.message);
+            }
+            if (!sigOk) {
+                console.warn('[SECURITY] Отсутствует/невалидна подпись экзаменной сессии:', participantId, testId);
+                // Не блокируем полностью — сбрасываем participantId чтобы результат сохранился как обычный
                 participantId = null;
                 isExamMode = false;
             }
@@ -4026,11 +4098,15 @@ async function handleAPI(method, pathname, body, token, query, clientIp = 'unkno
             const serverTabSwitches = activeSession.tabSwitchCount || 0;
             const serverFullscreenExits = activeSession.fullscreenExitCount || 0;
             const serverScreenshots = activeSession.screenshotAttempts || 0;
+            const serverPenalties = activeSession.penalties || [];
             // Берём максимум между клиентскими и серверными данными
             violations = serverViolations.length > (violations || []).length ? serverViolations : (violations || []);
             tabSwitchCount = Math.max(tabSwitchCount || 0, serverTabSwitches);
             fullscreenExitCount = Math.max(fullscreenExitCount || 0, serverFullscreenExits);
             screenshotAttempts = Math.max(screenshotAttempts || 0, serverScreenshots);
+            // Штрафы проктора: берём более длинный список (аудит 2026-06-10) — студент не может
+            // снять записанные сервером штрафы, прислав penalties:[] в теле сдачи.
+            penalties = serverPenalties.length > (penalties || []).length ? serverPenalties : (penalties || []);
         }
 
         if (!testId) {
@@ -4066,7 +4142,12 @@ async function handleAPI(method, pathname, body, token, query, clientIp = 'unkno
         console.log('[SUBMIT] Тест найден:', test.name);
 
         const allQuestions = loadDB('questions');
-        const questionIds = body.questionIds || Object.keys(answers);
+        // Валидация входа: без answers/questionIds — мягкая ошибка, а не 500 (аудит 2026-06-10).
+        // Раньше Object.keys(null) бросал исключение → HTTP 500, который клиент мог ретраить (риск дублей).
+        if ((!answers || typeof answers !== 'object') && !Array.isArray(body.questionIds)) {
+            return { success: false, error: 'Не переданы ответы (answers)' };
+        }
+        const questionIds = body.questionIds || Object.keys(answers || {});
 
         let earnedPoints = 0, maxPoints = 0, correctCount = 0;
         const details = [];
@@ -5023,6 +5104,10 @@ async function handleAPI(method, pathname, body, token, query, clientIp = 'unkno
             console.log(`[PUT teacher-notes] Результат не найден!`);
             return { success: false, error: 'Результат не найден' };
         }
+        // Правка оценки/штрафов — только админ или владелец теста (аудит 2026-06-10).
+        if (!canManageTest(session, results[idx].testId)) {
+            return { success: false, error: 'Нет прав на изменение этого результата', statusCode: 403 };
+        }
         // Сохраняем как массив объектов (не строку!)
         const notes = Array.isArray(body.teacherNotes) ? body.teacherNotes : [];
         // Добавляем ID каждой заметке если его нет
@@ -5352,11 +5437,22 @@ const server = http.createServer(async (req, res) => {
         }
 
         const token = req.headers.authorization?.replace('Bearer ', '');
-        // Получаем IP клиента (учитываем прокси)
-        const clientIp = req.headers['x-forwarded-for']?.split(',')[0]?.trim() ||
-                         req.headers['x-real-ip'] ||
-                         req.socket?.remoteAddress ||
-                         'unknown';
+        // Получаем IP клиента. Заголовкам X-Real-IP / X-Forwarded-For доверяем ТОЛЬКО когда
+        // соединение пришло от локального обратного прокси (nginx на 127.0.0.1) — иначе клиент,
+        // подключившийся к порту напрямую, мог бы подделать их и обойти rate-limit (аудит 2026-06-10).
+        const peerIp = req.socket?.remoteAddress || '';
+        const fromLocalProxy = peerIp === '127.0.0.1' || peerIp === '::1' || peerIp === '::ffff:127.0.0.1';
+        let clientIp;
+        if (fromLocalProxy) {
+            // nginx перезаписывает X-Real-IP = $remote_addr (подделать нельзя). XFF — берём ПОСЛЕДНИЙ
+            // элемент (его дописал nginx через $proxy_add_x_forwarded_for), а не первый клиентский.
+            const xff = req.headers['x-forwarded-for'];
+            clientIp = (req.headers['x-real-ip'] && String(req.headers['x-real-ip']).trim()) ||
+                       (xff ? String(xff).split(',').pop().trim() : '') ||
+                       peerIp || 'unknown';
+        } else {
+            clientIp = peerIp || 'unknown';
+        }
         try {
             const result = await handleAPI(req.method, pathname, body, token, query, clientIp);
             // HTTP статус код в зависимости от результата
@@ -5541,7 +5637,7 @@ async function startServer() {
         startCacheSync();
 
         // Запускаем сервер
-        server.listen(PORT, '0.0.0.0', () => {
+        server.listen(PORT, HOST, () => {
             console.log('');
             console.log('╔══════════════════════════════════════════════════════════╗');
             console.log('║      СЕРВЕР ТЕСТИРОВАНИЯ ЗАПУЩЕН (PostgreSQL)           ║');
