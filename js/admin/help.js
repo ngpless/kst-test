@@ -1,5 +1,5 @@
 // ============================================
-// СПРАВКА - НОВЫЙ ДИЗАЙН
+// СПРАВКА — ПОЛНАЯ ДОКУМЕНТАЦИЯ СИСТЕМЫ ТЕСТИРОВАНИЯ
 // ============================================
 
 function showHelpModal() {
@@ -11,6 +11,7 @@ function showHelpModal() {
         document.body.appendChild(helpModal);
     }
 
+    // Static hardcoded help content - no user input, safe for innerHTML
     helpModal.innerHTML = `
         <div class="modal-content help-modal-new">
             <button class="help-close-btn" onclick="hideHelpModal()">
@@ -29,7 +30,7 @@ function showHelpModal() {
 
                     <nav class="help-nav">
                         <div class="help-nav-group">
-                            <div class="help-nav-label">Быстрый старт</div>
+                            <div class="help-nav-label">БЫСТРЫЙ СТАРТ</div>
                             <a href="#" class="help-nav-item active" data-section="welcome">
                                 <span class="nav-icon">🏠</span>
                                 <span>Добро пожаловать</span>
@@ -41,34 +42,14 @@ function showHelpModal() {
                         </div>
 
                         <div class="help-nav-group">
-                            <div class="help-nav-label">Интерфейс</div>
-                            <a href="#" class="help-nav-item" data-section="header">
-                                <span class="nav-icon">📌</span>
-                                <span>Шапка и меню</span>
-                            </a>
-                            <a href="#" class="help-nav-item" data-section="tabs">
-                                <span class="nav-icon">📑</span>
-                                <span>Вкладки</span>
-                            </a>
-                            <a href="#" class="help-nav-item" data-section="cards">
-                                <span class="nav-icon">🃏</span>
-                                <span>Карточки</span>
-                            </a>
-                        </div>
-
-                        <div class="help-nav-group">
-                            <div class="help-nav-label">Работа с тестами</div>
+                            <div class="help-nav-label">РАБОТА С ТЕСТАМИ</div>
                             <a href="#" class="help-nav-item" data-section="disciplines">
                                 <span class="nav-icon">📚</span>
-                                <span>Дисциплины</span>
-                            </a>
-                            <a href="#" class="help-nav-item" data-section="topics">
-                                <span class="nav-icon">📂</span>
-                                <span>Темы</span>
+                                <span>Дисциплины и папки</span>
                             </a>
                             <a href="#" class="help-nav-item" data-section="tests">
                                 <span class="nav-icon">📝</span>
-                                <span>Тесты</span>
+                                <span>Тесты и настройки</span>
                             </a>
                             <a href="#" class="help-nav-item" data-section="questions">
                                 <span class="nav-icon">❓</span>
@@ -81,7 +62,7 @@ function showHelpModal() {
                         </div>
 
                         <div class="help-nav-group">
-                            <div class="help-nav-label">Проведение</div>
+                            <div class="help-nav-label">ПРОВЕДЕНИЕ</div>
                             <a href="#" class="help-nav-item" data-section="access">
                                 <span class="nav-icon">🔗</span>
                                 <span>Ссылка студентам</span>
@@ -101,27 +82,55 @@ function showHelpModal() {
                         </div>
 
                         <div class="help-nav-group">
-                            <div class="help-nav-label">Дополнительно</div>
-                            <a href="#" class="help-nav-item" data-section="groups">
-                                <span class="nav-icon">👥</span>
-                                <span>Группы</span>
-                            </a>
+                            <div class="help-nav-label">АНАЛИТИКА И ДАННЫЕ</div>
                             <a href="#" class="help-nav-item" data-section="results">
                                 <span class="nav-icon">📋</span>
                                 <span>Результаты</span>
+                            </a>
+                            <a href="#" class="help-nav-item" data-section="analytics">
+                                <span class="nav-icon">📈</span>
+                                <span>Аналитика</span>
+                            </a>
+                            <a href="#" class="help-nav-item" data-section="groups">
+                                <span class="nav-icon">👥</span>
+                                <span>Группы</span>
                             </a>
                             <a href="#" class="help-nav-item" data-section="export">
                                 <span class="nav-icon">💾</span>
                                 <span>Экспорт</span>
                             </a>
+                        </div>
+
+                        <div class="help-nav-group">
+                            <div class="help-nav-label">БЕЗОПАСНОСТЬ</div>
                             <a href="#" class="help-nav-item" data-section="anticheat">
                                 <span class="nav-icon">🛡️</span>
                                 <span>Антисписывание</span>
                             </a>
+                            <a href="#" class="help-nav-item" data-section="monitoring">
+                                <span class="nav-icon">📡</span>
+                                <span>Мониторинг</span>
+                            </a>
                         </div>
 
                         <div class="help-nav-group">
-                            <div class="help-nav-label">Для студентов</div>
+                            <div class="help-nav-label">НАСТРОЙКИ</div>
+                            <a href="#" class="help-nav-item" data-section="profile">
+                                <span class="nav-icon">👤</span>
+                                <span>Личный кабинет</span>
+                            </a>
+                            <a href="#" class="help-nav-item" data-section="telegram">
+                                <span class="nav-icon">📱</span>
+                                <span>Telegram-уведомления</span>
+                            </a>
+                            <a href="#" class="help-nav-item" data-section="pwa">
+                                <span class="nav-icon">📲</span>
+                                <span>Мобильное приложение</span>
+                            </a>
+                        </div>
+
+                        <div class="help-nav-group">
+                            <div class="help-nav-label">ДЛЯ СТУДЕНТОВ</div>
                             <a href="#" class="help-nav-item" data-section="student-start">
                                 <span class="nav-icon">🎒</span>
                                 <span>Как начать тест</span>
@@ -147,10 +156,7 @@ function showHelpModal() {
     helpModal.style.display = 'flex';
     document.body.style.overflow = 'hidden';
 
-    // Инициализация навигации
     initHelpNavigation();
-
-    // Показать первый раздел
     showHelpSection('welcome');
 }
 
@@ -167,13 +173,8 @@ function initHelpNavigation() {
         item.addEventListener('click', (e) => {
             e.preventDefault();
             const section = item.dataset.section;
-
-            // Убираем активный класс у всех
             document.querySelectorAll('.help-nav-item').forEach(i => i.classList.remove('active'));
-            // Добавляем активный класс текущему
             item.classList.add('active');
-
-            // Показываем секцию
             showHelpSection(section);
         });
     });
@@ -182,8 +183,8 @@ function initHelpNavigation() {
 function showHelpSection(sectionId) {
     const content = document.getElementById('help-content');
     const sections = getHelpSections();
-
     if (sections[sectionId]) {
+        // All section content is static hardcoded HTML, safe for innerHTML
         content.innerHTML = sections[sectionId];
         content.scrollTop = 0;
     }
@@ -191,6 +192,7 @@ function showHelpSection(sectionId) {
 
 function getHelpSections() {
     return {
+
         // ==========================================
         // ДОБРО ПОЖАЛОВАТЬ
         // ==========================================
@@ -198,38 +200,42 @@ function getHelpSections() {
             <div class="help-section">
                 <div class="help-hero">
                     <div class="help-hero-icon">👋</div>
-                    <h1>Добро пожаловать!</h1>
-                    <p class="help-hero-text">Это система онлайн-тестирования. Здесь вы можете создавать тесты, проводить зачёты и следить за успеваемостью студентов.</p>
+                    <div class="help-hero-text">
+                        <h1>Добро пожаловать в систему тестирования!</h1>
+                        <p>Здесь вы можете создавать тесты, проводить зачёты и срезы, отслеживать результаты студентов — всё в одном месте.</p>
+                    </div>
                 </div>
 
                 <div class="help-features">
                     <div class="help-feature">
                         <div class="help-feature-icon">📝</div>
                         <h3>Создавайте тесты</h3>
-                        <p>Разные типы вопросов: выбор ответа, сопоставление, ввод текста, расстановка по порядку</p>
+                        <p>Пять типов вопросов: одиночный выбор, множественный выбор, сопоставление, расстановка по порядку, короткий ответ. Поддержка формул LaTeX и изображений.</p>
                     </div>
                     <div class="help-feature">
                         <div class="help-feature-icon">🎓</div>
                         <h3>Проводите зачёты</h3>
-                        <p>Каждому студенту выдаётся персональный код. Никто не зайдёт под чужим именем</p>
+                        <p>Персональные 5-значные коды для каждого студента, контроль попыток, печать карточек с кодами — полная организация экзаменационного процесса.</p>
                     </div>
                     <div class="help-feature">
                         <div class="help-feature-icon">🛡️</div>
                         <h3>Защита от списывания</h3>
-                        <p>Система видит, когда студент переключается на другие вкладки или приложения</p>
+                        <p>Отслеживание переключений вкладок, перемешивание вопросов и ответов, штрафное время, персональные коды. Списать будет непросто.</p>
                     </div>
                     <div class="help-feature">
                         <div class="help-feature-icon">📊</div>
                         <h3>Смотрите статистику</h3>
-                        <p>Кто прошёл, какие оценки, какие вопросы самые сложные — всё как на ладони</p>
+                        <p>Подробная аналитика по каждому тесту: распределение оценок, средний балл, самые сложные вопросы, экспорт в Excel и Word.</p>
                     </div>
                 </div>
+
+                <img src="/help-img/02-disciplines.png" alt="Главная страница — список дисциплин" class="help-screenshot" style="width:100%;border-radius:12px;border:1px solid #e5e5e5;margin:16px 0;">
 
                 <div class="help-tip-box">
                     <div class="help-tip-icon">💡</div>
                     <div class="help-tip-content">
-                        <strong>Совет для начинающих</strong>
-                        <p>Начните с раздела «Первые шаги» в меню слева. Там пошаговая инструкция как создать ваш первый тест за 5 минут.</p>
+                        <strong>С чего начать?</strong>
+                        <p>Перейдите в раздел <strong>«Первые шаги»</strong> — там пошаговая инструкция, как создать свой первый тест за 5 минут.</p>
                     </div>
                 </div>
             </div>
@@ -240,450 +246,253 @@ function getHelpSections() {
         // ==========================================
         'first-steps': `
             <div class="help-section">
-                <h1>🚀 Первые шаги</h1>
-                <p class="help-subtitle">Создайте свой первый тест за 5 минут. Следуйте этим простым шагам.</p>
+                <h2 class="help-subtitle">🚀 Первые шаги</h2>
+                <p class="help-text">От регистрации до первого теста — всего 5 шагов. Следуйте инструкции, и через несколько минут ваши студенты смогут пройти тест.</p>
 
                 <div class="help-steps">
                     <div class="help-step">
                         <div class="help-step-num">1</div>
                         <div class="help-step-content">
                             <h3>Создайте дисциплину</h3>
-                            <p>Дисциплина — это ваш предмет. Например: «Математика», «История», «Программирование».</p>
+                            <p>На главной странице нажмите кнопку <strong>«+ Дисциплина»</strong>. Введите название (например, «Информатика») и при необходимости привяжите группы.</p>
                             <div class="help-action">
-                                <span class="help-action-label">Где это:</span>
-                                <span class="help-action-path">Вкладка «Дисциплины» → кнопка «+ Создать дисциплину»</span>
+                                <span class="help-action-label">Где найти:</span>
+                                <span class="help-action-path">Главная → кнопка «+ Дисциплина»</span>
                             </div>
                         </div>
                     </div>
-
                     <div class="help-step">
                         <div class="help-step-num">2</div>
                         <div class="help-step-content">
                             <h3>Создайте тему</h3>
-                            <p>Тема — это раздел внутри дисциплины. Например: «Глава 1», «Введение», «Линейные уравнения».</p>
+                            <p>Откройте дисциплину и нажмите <strong>«+ Тема»</strong>. Темы помогают структурировать тесты: «Глава 1», «Модуль 2», «Итоговый» и т.д.</p>
                             <div class="help-action">
-                                <span class="help-action-label">Где это:</span>
-                                <span class="help-action-path">Нажмите на дисциплину → кнопка «+ Создать тему»</span>
+                                <span class="help-action-label">Где найти:</span>
+                                <span class="help-action-path">Дисциплина → кнопка «+ Тема»</span>
                             </div>
                         </div>
                     </div>
-
                     <div class="help-step">
                         <div class="help-step-num">3</div>
                         <div class="help-step-content">
                             <h3>Создайте тест</h3>
-                            <p>Укажите название теста, время на прохождение и другие настройки.</p>
+                            <p>Внутри темы нажмите <strong>«+ Тест»</strong>. Укажите название, лимит времени, количество вопросов и режим работы (тренировка, контрольная, зачёт или срез).</p>
                             <div class="help-action">
-                                <span class="help-action-label">Где это:</span>
-                                <span class="help-action-path">Нажмите на тему → кнопка «+ Создать тест»</span>
+                                <span class="help-action-label">Где найти:</span>
+                                <span class="help-action-path">Тема → кнопка «+ Тест»</span>
                             </div>
                         </div>
                     </div>
-
                     <div class="help-step">
                         <div class="help-step-num">4</div>
                         <div class="help-step-content">
                             <h3>Добавьте вопросы</h3>
-                            <p>Напечатайте вопросы вручную или загрузите готовые из файла GIFT.</p>
+                            <p>Создавайте вопросы вручную или импортируйте из файла в формате GIFT. Поддерживается 5 типов вопросов, можно прикреплять изображения и формулы LaTeX.</p>
                             <div class="help-action">
-                                <span class="help-action-label">Где это:</span>
-                                <span class="help-action-path">На карточке теста → кнопка «Вопросы»</span>
+                                <span class="help-action-label">Где найти:</span>
+                                <span class="help-action-path">Тест → вкладка «Вопросы» → «+ Вопрос» или «Импорт GIFT»</span>
                             </div>
                         </div>
                     </div>
-
                     <div class="help-step">
                         <div class="help-step-num">5</div>
                         <div class="help-step-content">
-                            <h3>Раздайте ссылку</h3>
-                            <p>Скопируйте ссылку на тест и отправьте студентам. Они смогут пройти тест в браузере.</p>
+                            <h3>Раздайте код или ссылку</h3>
+                            <p>У каждого теста есть короткий код (6 цифр для обычного теста, 5 для зачёта/среза). Студенты вводят код на <strong>kst-test.ru/start</strong> — и начинают тест.</p>
                             <div class="help-action">
-                                <span class="help-action-label">Где это:</span>
-                                <span class="help-action-path">На карточке теста → кнопка «Доступ»</span>
+                                <span class="help-action-label">Где найти:</span>
+                                <span class="help-action-path">Карточка теста → код доступа / кнопка «Скопировать ссылку»</span>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <div class="help-note-box">
-                    <div class="help-note-icon">📝</div>
-                    <div class="help-note-content">
-                        <strong>Структура такая:</strong>
-                        <div class="help-structure">
-                            <div class="help-structure-item level-1">
-                                <span class="structure-icon">📚</span>
-                                <span>Дисциплина (предмет)</span>
-                            </div>
-                            <div class="help-structure-item level-2">
-                                <span class="structure-icon">📂</span>
-                                <span>Тема (раздел)</span>
-                            </div>
-                            <div class="help-structure-item level-3">
-                                <span class="structure-icon">📝</span>
-                                <span>Тест</span>
-                            </div>
-                            <div class="help-structure-item level-4">
-                                <span class="structure-icon">❓</span>
-                                <span>Вопросы</span>
-                            </div>
-                        </div>
+                <h3 class="help-subtitle">📂 Структура системы</h3>
+                <div class="help-structure">
+                    <div class="help-structure-item level-1">📚 Дисциплина (например, «Информатика»)</div>
+                    <div class="help-structure-item level-2">📂 Тема (например, «Глава 1. Основы»)</div>
+                    <div class="help-structure-item level-3">📝 Тест (например, «Тест по главе 1»)</div>
+                    <div class="help-structure-item level-4">❓ Вопросы (до 500 штук в одном тесте)</div>
+                </div>
+
+                <img src="/help-img/03-topics.png" alt="Темы внутри дисциплины" class="help-screenshot" style="width:100%;border-radius:12px;border:1px solid #e5e5e5;margin:16px 0;">
+
+                <div class="help-tip-box">
+                    <div class="help-tip-icon">💡</div>
+                    <div class="help-tip-content">
+                        <strong>Совет</strong>
+                        <p>Начните с тренировочного режима — так вы сможете проверить тест на себе, прежде чем давать его студентам.</p>
                     </div>
                 </div>
             </div>
         `,
 
         // ==========================================
-        // ШАПКА И МЕНЮ
-        // ==========================================
-        'header': `
-            <div class="help-section">
-                <h1>📌 Шапка и меню</h1>
-                <p class="help-subtitle">Наведите на элементы чтобы узнать что они делают</p>
-
-                <div class="interactive-demo-container">
-                    <div class="interactive-header-wrapper">
-                        <div class="real-header">
-                            <div class="real-header-left">
-                                <div class="interactive-element" data-tooltip-pos="bottom">
-                                    <div class="real-logo">🎓</div>
-                                    <div class="interactive-tooltip">
-                                        <div class="tooltip-content">
-                                            <span class="tooltip-icon">🏠</span>
-                                            <strong>Логотип</strong>
-                                            <p>Нажмите чтобы вернуться к списку дисциплин</p>
-                                        </div>
-                                        <div class="tooltip-arrow"></div>
-                                    </div>
-                                    <div class="interactive-pulse"></div>
-                                </div>
-                                <div class="interactive-element" data-tooltip-pos="bottom">
-                                    <div class="real-header-text">
-                                        <span class="real-header-title">Панель управления</span>
-                                        <span class="real-header-subtitle">Добро пожаловать, Иван Иванович</span>
-                                    </div>
-                                    <div class="interactive-tooltip">
-                                        <div class="tooltip-content">
-                                            <span class="tooltip-icon">👤</span>
-                                            <strong>Ваш профиль</strong>
-                                            <p>Показывает имя авторизованного пользователя</p>
-                                        </div>
-                                        <div class="tooltip-arrow"></div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="real-header-right">
-                                <div class="interactive-element" data-tooltip-pos="bottom">
-                                    <div class="real-theme-toggle">
-                                        <div class="real-theme-circle"></div>
-                                    </div>
-                                    <div class="interactive-tooltip">
-                                        <div class="tooltip-content">
-                                            <span class="tooltip-icon">🌙</span>
-                                            <strong>Тема оформления</strong>
-                                            <p>Переключить светлую / тёмную тему</p>
-                                        </div>
-                                        <div class="tooltip-arrow"></div>
-                                    </div>
-                                    <div class="interactive-pulse"></div>
-                                </div>
-                                <div class="interactive-element" data-tooltip-pos="bottom">
-                                    <button class="real-help-btn">?</button>
-                                    <div class="interactive-tooltip">
-                                        <div class="tooltip-content">
-                                            <span class="tooltip-icon">📖</span>
-                                            <strong>Справка</strong>
-                                            <p>Открыть это руководство</p>
-                                        </div>
-                                        <div class="tooltip-arrow"></div>
-                                    </div>
-                                    <div class="interactive-pulse"></div>
-                                </div>
-                                <div class="interactive-element" data-tooltip-pos="bottom">
-                                    <button class="real-logout-btn">Выйти</button>
-                                    <div class="interactive-tooltip">
-                                        <div class="tooltip-content">
-                                            <span class="tooltip-icon">🚪</span>
-                                            <strong>Выход</strong>
-                                            <p>Завершить сеанс работы</p>
-                                        </div>
-                                        <div class="tooltip-arrow"></div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="interactive-hint">
-                        <div class="hint-pulse"></div>
-                        <span class="hint-icon">👆</span>
-                        <span class="hint-text">Наведите курсор на элементы</span>
-                    </div>
-                </div>
-            </div>
-        `,
-
-        // ==========================================
-        // ВКЛАДКИ
-        // ==========================================
-        'tabs': `
-            <div class="help-section">
-                <h1>📑 Вкладки</h1>
-                <p class="help-subtitle">Наведите на вкладку чтобы узнать что она содержит</p>
-
-                <div class="interactive-demo-container">
-                    <div class="interactive-tabs-wrapper">
-                        <div class="interactive-element" data-tab="disciplines">
-                            <button class="real-tab active">Дисциплины</button>
-                            <div class="interactive-tooltip tooltip-large">
-                                <div class="tooltip-content">
-                                    <span class="tooltip-icon">📚</span>
-                                    <strong>Дисциплины</strong>
-                                    <p>Главная вкладка. Создание и редактирование тестов</p>
-                                    <span class="tooltip-tag">Основная работа</span>
-                                </div>
-                                <div class="tooltip-arrow"></div>
-                            </div>
-                            <div class="interactive-pulse"></div>
-                        </div>
-                        <div class="interactive-element" data-tab="results">
-                            <button class="real-tab">Результаты</button>
-                            <div class="interactive-tooltip tooltip-large">
-                                <div class="tooltip-content">
-                                    <span class="tooltip-icon">📋</span>
-                                    <strong>Результаты</strong>
-                                    <p>Просмотр оценок студентов и фильтрация</p>
-                                    <span class="tooltip-tag">Просмотр оценок</span>
-                                </div>
-                                <div class="tooltip-arrow"></div>
-                            </div>
-                        </div>
-                        <div class="interactive-element" data-tab="analytics">
-                            <button class="real-tab">📊 Аналитика</button>
-                            <div class="interactive-tooltip tooltip-large">
-                                <div class="tooltip-content">
-                                    <span class="tooltip-icon">📊</span>
-                                    <strong>Аналитика</strong>
-                                    <p>Графики, статистика, сложные вопросы</p>
-                                    <span class="tooltip-tag">Статистика</span>
-                                </div>
-                                <div class="tooltip-arrow"></div>
-                            </div>
-                        </div>
-                        <div class="interactive-element" data-tab="groups">
-                            <button class="real-tab">Группы</button>
-                            <div class="interactive-tooltip tooltip-large">
-                                <div class="tooltip-content">
-                                    <span class="tooltip-icon">👥</span>
-                                    <strong>Группы</strong>
-                                    <p>Списки студентов для зачётов</p>
-                                    <span class="tooltip-tag">Списки студентов</span>
-                                </div>
-                                <div class="tooltip-arrow"></div>
-                            </div>
-                        </div>
-                        <div class="interactive-element" data-tab="profile">
-                            <button class="real-tab">Личный кабинет</button>
-                            <div class="interactive-tooltip tooltip-large">
-                                <div class="tooltip-content">
-                                    <span class="tooltip-icon">👤</span>
-                                    <strong>Личный кабинет</strong>
-                                    <p>Настройки профиля, смена пароля</p>
-                                    <span class="tooltip-tag">Ваш профиль</span>
-                                </div>
-                                <div class="tooltip-arrow"></div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="interactive-hint">
-                        <div class="hint-pulse"></div>
-                        <span class="hint-icon">👆</span>
-                        <span class="hint-text">Наведите на вкладки</span>
-                    </div>
-                </div>
-
-                <h2 style="margin-top: 32px;">Подробнее о каждой вкладке</h2>
-
-                <div class="help-tabs-explain">
-                    <div class="help-tab-card interactive-card">
-                        <div class="tab-card-icon">📚</div>
-                        <div class="tab-card-content">
-                            <h3>Дисциплины</h3>
-                            <p>Главная вкладка. Здесь вы создаёте и редактируете всё: дисциплины, темы, тесты, вопросы. Отсюда же раздаёте ссылки студентам.</p>
-                            <span class="tab-card-tag">Основная работа</span>
-                        </div>
-                        <div class="card-arrow">→</div>
-                    </div>
-
-                    <div class="help-tab-card interactive-card">
-                        <div class="tab-card-icon">📋</div>
-                        <div class="tab-card-content">
-                            <h3>Результаты</h3>
-                            <p>Все результаты тестов. Видно кто прошёл, когда, какая оценка, сколько правильных ответов. Можно фильтровать по группе, тесту, дате.</p>
-                            <span class="tab-card-tag">Просмотр оценок</span>
-                        </div>
-                        <div class="card-arrow">→</div>
-                    </div>
-
-                    <div class="help-tab-card interactive-card">
-                        <div class="tab-card-icon">📊</div>
-                        <div class="tab-card-content">
-                            <h3>Аналитика</h3>
-                            <p>Статистика и графики. Средний балл по тесту, распределение оценок, самые сложные вопросы. Помогает понять что студенты не усвоили.</p>
-                            <span class="tab-card-tag">Статистика</span>
-                        </div>
-                        <div class="card-arrow">→</div>
-                    </div>
-
-                    <div class="help-tab-card interactive-card">
-                        <div class="tab-card-icon">👥</div>
-                        <div class="tab-card-content">
-                            <h3>Группы</h3>
-                            <p>Списки студентов с фотографиями. Можно загружать списки из Excel. Нужны для зачётов — чтобы выдавать персональные коды.</p>
-                            <span class="tab-card-tag">Списки студентов</span>
-                        </div>
-                        <div class="card-arrow">→</div>
-                    </div>
-
-                    <div class="help-tab-card">
-                        <div class="tab-card-icon">👤</div>
-                        <div class="tab-card-content">
-                            <h3>Личный кабинет</h3>
-                            <p>Ваш профиль. Можно сменить пароль, имя, загрузить фото. Также здесь настройки Telegram-уведомлений.</p>
-                            <span class="tab-card-tag">Настройки профиля</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        `,
-
-        // ==========================================
-        // КАРТОЧКИ
-        // ==========================================
-        'cards': `
-            <div class="help-section">
-                <h1>🃏 Карточки</h1>
-                <p class="help-subtitle">Всё в системе показано карточками. Вот как их читать.</p>
-
-                <h2>Карточка дисциплины</h2>
-                <p class="help-text">Именно так выглядит карточка дисциплины на сайте:</p>
-
-                <div class="help-ui-demo">
-                    <div class="real-discipline-card">
-                        <div class="real-discipline-card-inner">
-                            <div class="real-discipline-header">
-                                <h3>Информатика</h3>
-                                <span class="real-discipline-group">КС-21</span>
-                            </div>
-                            <div class="real-discipline-stats">
-                                <div class="real-stat-item">
-                                    <span class="real-stat-value">5</span>
-                                    <span class="real-stat-label">тем</span>
-                                </div>
-                                <div class="real-stat-item">
-                                    <span class="real-stat-value">12</span>
-                                    <span class="real-stat-label">тестов</span>
-                                </div>
-                                <div class="real-stat-item">
-                                    <span class="real-stat-value">156</span>
-                                    <span class="real-stat-label">вопросов</span>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="real-discipline-actions">
-                            <button class="real-btn-icon" title="Редактировать">✏️</button>
-                            <button class="real-btn-icon" title="Удалить">🗑️</button>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="help-explain-list">
-                    <div class="help-explain-item">
-                        <span class="explain-dot purple"></span>
-                        <span><strong>Цветная полоса сверху</strong> — показывает что карточка активна</span>
-                    </div>
-                    <div class="help-explain-item">
-                        <span class="explain-dot blue"></span>
-                        <span><strong>Название</strong> — как называется ваш предмет</span>
-                    </div>
-                    <div class="help-explain-item">
-                        <span class="explain-dot green"></span>
-                        <span><strong>Группа</strong> — к какой группе привязана дисциплина</span>
-                    </div>
-                    <div class="help-explain-item">
-                        <span class="explain-dot gray"></span>
-                        <span><strong>Статистика внизу</strong> — сколько тем, тестов и вопросов внутри</span>
-                    </div>
-                </div>
-
-                <h2>Карточка теста</h2>
-                <p class="help-text">А вот так выглядит карточка теста:</p>
-
-                <div class="help-ui-demo">
-                    <div class="real-test-card">
-                        <div class="real-test-header">
-                            <h3 class="real-test-title">Тест по главе 1</h3>
-                            <span class="real-test-badge">20 вопросов</span>
-                        </div>
-                        <div class="real-test-info">
-                            <div class="real-test-param">
-                                <span class="param-icon">⏱</span>
-                                <span>30 минут</span>
-                            </div>
-                            <div class="real-test-param">
-                                <span class="param-icon">🔀</span>
-                                <span>Случайный порядок</span>
-                            </div>
-                            <div class="real-test-param">
-                                <span class="param-icon">📊</span>
-                                <span>Показывать результат</span>
-                            </div>
-                        </div>
-                        <div class="real-test-actions">
-                            <button class="real-btn real-btn-primary">Вопросы</button>
-                            <button class="real-btn real-btn-secondary">Доступ</button>
-                            <button class="real-btn real-btn-secondary">👁 Просмотр</button>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="help-buttons-explain">
-                    <h3>Кнопки на карточке теста:</h3>
-                    <div class="help-btn-item">
-                        <span class="btn-name primary">Вопросы</span>
-                        <span class="btn-desc">Открыть список вопросов. Здесь добавляете, редактируете, удаляете вопросы.</span>
-                    </div>
-                    <div class="help-btn-item">
-                        <span class="btn-name">Доступ</span>
-                        <span class="btn-desc">Получить ссылку для студентов. Также здесь настраивается режим зачёта.</span>
-                    </div>
-                    <div class="help-btn-item">
-                        <span class="btn-name">👁 Просмотр</span>
-                        <span class="btn-desc">Посмотреть тест глазами студента. Полезно для проверки перед раздачей.</span>
-                    </div>
-                </div>
-            </div>
-        `,
-
-        // ==========================================
-        // ДИСЦИПЛИНЫ
+        // ДИСЦИПЛИНЫ И ПАПКИ
         // ==========================================
         'disciplines': `
             <div class="help-section">
-                <h1>📚 Дисциплины</h1>
-                <p class="help-subtitle">Дисциплина — это ваш предмет. С неё всё начинается.</p>
+                <h2 class="help-subtitle">📚 Дисциплины и папки</h2>
+                <p class="help-text">Дисциплина — это основная единица организации. Внутри дисциплины находятся темы, а внутри тем — тесты. Дисциплины можно группировать по папкам.</p>
 
-                <h2>Как создать дисциплину</h2>
+                <h3 class="help-subtitle">Создание дисциплины</h3>
                 <div class="help-steps-mini">
                     <div class="step-mini">
-                        <span class="step-mini-num">1</span>
-                        <span>Нажмите кнопку <strong>«+ Создать дисциплину»</strong> вверху страницы</span>
+                        <div class="step-mini-num">1</div>
+                        <span>На главной странице нажмите кнопку <strong>«+ Дисциплина»</strong></span>
                     </div>
                     <div class="step-mini">
-                        <span class="step-mini-num">2</span>
-                        <span>Введите название (например: «Информатика»)</span>
+                        <div class="step-mini-num">2</div>
+                        <span>Введите название дисциплины</span>
                     </div>
                     <div class="step-mini">
-                        <span class="step-mini-num">3</span>
-                        <span>Нажмите <strong>«Сохранить»</strong></span>
+                        <div class="step-mini-num">3</div>
+                        <span>При необходимости привяжите группы — так результаты будут автоматически распределяться по группам</span>
+                    </div>
+                </div>
+
+                <h3 class="help-subtitle">📁 Папки</h3>
+                <p class="help-text">Если у вас много дисциплин, используйте папки для организации. Нажмите кнопку <strong>«+ Папка»</strong> на главной странице, задайте название и перетащите в неё нужные дисциплины.</p>
+
+                <h3 class="help-subtitle">🔍 Поиск и сортировка</h3>
+                <p class="help-text">На странице дисциплин есть строка поиска и варианты сортировки:</p>
+                <div class="help-legend">
+                    <div class="help-legend-item">
+                        <div class="legend-icon">🔤</div>
+                        <div class="legend-content"><strong>По названию</strong> — алфавитный порядок</div>
+                    </div>
+                    <div class="help-legend-item">
+                        <div class="legend-icon">📂</div>
+                        <div class="legend-content"><strong>По темам</strong> — сколько тем в дисциплине</div>
+                    </div>
+                    <div class="help-legend-item">
+                        <div class="legend-icon">📝</div>
+                        <div class="legend-content"><strong>По тестам</strong> — общее количество тестов</div>
+                    </div>
+                    <div class="help-legend-item">
+                        <div class="legend-icon">👥</div>
+                        <div class="legend-content"><strong>По группам</strong> — количество привязанных групп</div>
+                    </div>
+                </div>
+
+                <h3 class="help-subtitle">☑️ Массовые операции</h3>
+                <p class="help-text">Отмечайте дисциплины галочками (чекбоксами) для массовых действий: удаление нескольких дисциплин одновременно, перемещение в папку.</p>
+
+                <h3 class="help-subtitle">📂 Темы внутри дисциплины</h3>
+                <p class="help-text">Откройте дисциплину, чтобы увидеть её темы. Каждая тема — контейнер для тестов. Для навигации используйте хлебные крошки в верхней части страницы.</p>
+
+                <img src="/help-img/02-disciplines.png" alt="Список дисциплин" class="help-screenshot" style="width:100%;border-radius:12px;border:1px solid #e5e5e5;margin:16px 0;">
+
+                <div class="help-tip-box">
+                    <div class="help-tip-icon">💡</div>
+                    <div class="help-tip-content">
+                        <strong>Совет</strong>
+                        <p>Привязывайте группы к дисциплинам — тогда в результатах можно будет фильтровать по группам, а аналитика станет более точной.</p>
+                    </div>
+                </div>
+            </div>
+        `,
+
+        // ==========================================
+        // ТЕСТЫ И НАСТРОЙКИ
+        // ==========================================
+        'tests': `
+            <div class="help-section">
+                <h2 class="help-subtitle">📝 Тесты и настройки</h2>
+                <p class="help-text">Тест создаётся внутри темы. У каждого теста есть гибкие настройки: режим работы, ограничение по времени, перемешивание и многое другое.</p>
+
+                <h3 class="help-subtitle">Создание теста</h3>
+                <div class="help-steps-mini">
+                    <div class="step-mini">
+                        <div class="step-mini-num">1</div>
+                        <span>Откройте нужную тему</span>
+                    </div>
+                    <div class="step-mini">
+                        <div class="step-mini-num">2</div>
+                        <span>Нажмите <strong>«+ Тест»</strong></span>
+                    </div>
+                    <div class="step-mini">
+                        <div class="step-mini-num">3</div>
+                        <span>Заполните настройки: название, лимит времени, количество вопросов, режим</span>
+                    </div>
+                </div>
+
+                <h3 class="help-subtitle">⚙️ Настройки теста</h3>
+                <div class="help-summary-table">
+                    <table>
+                        <thead>
+                            <tr><th>Параметр</th><th>Описание</th></tr>
+                        </thead>
+                        <tbody>
+                            <tr><td><strong>Название</strong></td><td>Отображается студенту при прохождении теста</td></tr>
+                            <tr><td><strong>Лимит времени</strong></td><td>Время в минутах. По истечении тест завершается автоматически</td></tr>
+                            <tr><td><strong>Кол-во вопросов</strong></td><td>Сколько вопросов показывать из общего банка (случайная выборка)</td></tr>
+                            <tr><td><strong>Перемешивание вопросов</strong></td><td>Каждый студент получает вопросы в случайном порядке</td></tr>
+                            <tr><td><strong>Перемешивание ответов</strong></td><td>Варианты ответов перемешиваются для каждого студента</td></tr>
+                            <tr><td><strong>Штрафное время</strong></td><td>Минуты, которые списываются при переключении вкладки</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <h3 class="help-subtitle">🎮 Режимы теста</h3>
+                <div class="help-mode-info">
+                    <div class="mode-icon">🎯</div>
+                    <div class="mode-details">
+                        <h4>Тренировка</h4>
+                        <p>Студент видит правильные ответы после каждого вопроса. Подходит для самоподготовки. Код — 6 цифр.</p>
+                    </div>
+                </div>
+                <div class="help-mode-info">
+                    <div class="mode-icon">📝</div>
+                    <div class="mode-details">
+                        <h4>Контрольная (обычный режим)</h4>
+                        <p>Стандартный тест без показа ответов. Результат виден после завершения. Код — 6 цифр.</p>
+                    </div>
+                </div>
+                <div class="help-mode-info">
+                    <div class="mode-icon">🎓</div>
+                    <div class="mode-details">
+                        <h4>Зачёт</h4>
+                        <p>Требует списка участников. Каждому выдаётся персональный 5-значный код. Можно задать проходной балл и макс. количество попыток.</p>
+                    </div>
+                </div>
+                <div class="help-mode-info">
+                    <div class="mode-icon">📊</div>
+                    <div class="mode-details">
+                        <h4>Срез</h4>
+                        <p>Административный срез с вариантами. Персональные 5-значные коды. Поддержка мониторинга в реальном времени.</p>
+                    </div>
+                </div>
+
+                <h3 class="help-subtitle">🔢 Коды доступа</h3>
+                <p class="help-text">Каждому тесту автоматически присваивается короткий код:</p>
+                <div class="help-summary-table">
+                    <table>
+                        <thead>
+                            <tr><th>Режим</th><th>Длина кода</th><th>Тип</th></tr>
+                        </thead>
+                        <tbody>
+                            <tr><td>Тренировка</td><td>6 цифр</td><td>Общий (один для всех)</td></tr>
+                            <tr><td>Контрольная</td><td>6 цифр</td><td>Общий (один для всех)</td></tr>
+                            <tr><td>Зачёт</td><td>5 цифр</td><td>Персональный (у каждого свой)</td></tr>
+                            <tr><td>Срез</td><td>5 цифр</td><td>Персональный (у каждого свой)</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <h3 class="help-subtitle">📐 Дополнительные возможности</h3>
+                <div class="help-legend">
+                    <div class="help-legend-item">
+                        <div class="legend-icon">🧮</div>
+                        <div class="legend-content"><strong>LaTeX-формулы</strong> — используйте KaTeX для математических формул прямо в вопросах и ответах</div>
+                    </div>
+                    <div class="help-legend-item">
+                        <div class="legend-icon">🖼️</div>
+                        <div class="legend-content"><strong>Изображения</strong> — прикрепляйте картинки к вопросам и ответам</div>
+                    </div>
+                    <div class="help-legend-item">
+                        <div class="legend-icon">⚡</div>
+                        <div class="legend-content"><strong>Массовая настройка</strong> — применяйте параметры сразу к нескольким тестам</div>
                     </div>
                 </div>
 
@@ -691,142 +500,7 @@ function getHelpSections() {
                     <div class="help-tip-icon">💡</div>
                     <div class="help-tip-content">
                         <strong>Совет</strong>
-                        <p>Называйте дисциплины понятно. Если ведёте у разных групп — можно добавить год или семестр: «Математика 2024» или «Физика (1 семестр)».</p>
-                    </div>
-                </div>
-
-                <h2>Что можно делать с дисциплиной</h2>
-                <div class="help-actions-grid">
-                    <div class="help-action-card">
-                        <span class="action-icon">✏️</span>
-                        <strong>Редактировать</strong>
-                        <p>Изменить название</p>
-                    </div>
-                    <div class="help-action-card">
-                        <span class="action-icon">🗑️</span>
-                        <strong>Удалить</strong>
-                        <p>Удалит вместе со всеми темами и тестами!</p>
-                    </div>
-                    <div class="help-action-card">
-                        <span class="action-icon">📂</span>
-                        <strong>Открыть</strong>
-                        <p>Нажмите на карточку чтобы увидеть темы внутри</p>
-                    </div>
-                </div>
-
-                <div class="help-warning-box">
-                    <div class="help-warning-icon">⚠️</div>
-                    <div class="help-warning-content">
-                        <strong>Осторожно с удалением!</strong>
-                        <p>При удалении дисциплины удалятся ВСЕ темы, тесты и вопросы внутри неё. Это действие нельзя отменить.</p>
-                    </div>
-                </div>
-            </div>
-        `,
-
-        // ==========================================
-        // ТЕМЫ
-        // ==========================================
-        'topics': `
-            <div class="help-section">
-                <h1>📂 Темы</h1>
-                <p class="help-subtitle">Тема — это раздел внутри дисциплины. Помогает организовать тесты по главам или разделам.</p>
-
-                <h2>Как создать тему</h2>
-                <div class="help-steps-mini">
-                    <div class="step-mini">
-                        <span class="step-mini-num">1</span>
-                        <span>Откройте дисциплину (нажмите на её карточку)</span>
-                    </div>
-                    <div class="step-mini">
-                        <span class="step-mini-num">2</span>
-                        <span>Нажмите кнопку <strong>«+ Создать тему»</strong></span>
-                    </div>
-                    <div class="step-mini">
-                        <span class="step-mini-num">3</span>
-                        <span>Введите название темы</span>
-                    </div>
-                    <div class="step-mini">
-                        <span class="step-mini-num">4</span>
-                        <span>Нажмите <strong>«Сохранить»</strong></span>
-                    </div>
-                </div>
-
-                <h2>Примеры названий тем</h2>
-                <div class="help-examples">
-                    <div class="example-item">Глава 1. Введение</div>
-                    <div class="example-item">Раздел 2. Линейные уравнения</div>
-                    <div class="example-item">Тема 3. Циклы в программировании</div>
-                    <div class="example-item">Контрольная работа №1</div>
-                </div>
-
-                <div class="help-tip-box">
-                    <div class="help-tip-icon">💡</div>
-                    <div class="help-tip-content">
-                        <strong>Удобная навигация</strong>
-                        <p>В верхней части страницы есть «хлебные крошки» — они показывают где вы находитесь: Дисциплина → Тема. Нажмите на название чтобы вернуться назад.</p>
-                    </div>
-                </div>
-            </div>
-        `,
-
-        // ==========================================
-        // ТЕСТЫ
-        // ==========================================
-        'tests': `
-            <div class="help-section">
-                <h1>📝 Тесты</h1>
-                <p class="help-subtitle">Тест — это набор вопросов для студентов. Самая важная часть системы.</p>
-
-                <h2>Как создать тест</h2>
-                <div class="help-steps-mini">
-                    <div class="step-mini">
-                        <span class="step-mini-num">1</span>
-                        <span>Откройте нужную тему</span>
-                    </div>
-                    <div class="step-mini">
-                        <span class="step-mini-num">2</span>
-                        <span>Нажмите <strong>«+ Создать тест»</strong></span>
-                    </div>
-                    <div class="step-mini">
-                        <span class="step-mini-num">3</span>
-                        <span>Заполните настройки (см. ниже)</span>
-                    </div>
-                    <div class="step-mini">
-                        <span class="step-mini-num">4</span>
-                        <span>Нажмите <strong>«Сохранить»</strong></span>
-                    </div>
-                </div>
-
-                <h2>Настройки теста</h2>
-                <div class="help-settings-list">
-                    <div class="help-setting">
-                        <div class="setting-name">Название теста</div>
-                        <div class="setting-desc">Как будет называться тест. Студенты увидят это название.</div>
-                    </div>
-                    <div class="help-setting">
-                        <div class="setting-name">Время на прохождение</div>
-                        <div class="setting-desc">Сколько минут даётся на тест. Когда время выйдет — тест автоматически завершится.</div>
-                    </div>
-                    <div class="help-setting">
-                        <div class="setting-name">Количество вопросов</div>
-                        <div class="setting-desc">Сколько вопросов показать студенту. Если у вас 50 вопросов, а вы укажете 20 — система выберет 20 случайных.</div>
-                    </div>
-                    <div class="help-setting">
-                        <div class="setting-name">Случайный порядок</div>
-                        <div class="setting-desc">Если включено — вопросы и варианты ответов будут перемешаны. Так сложнее списать у соседа.</div>
-                    </div>
-                    <div class="help-setting">
-                        <div class="setting-name">Показывать результат</div>
-                        <div class="setting-desc">Если включено — студент сразу увидит оценку после теста. Если выключено — узнает только от вас.</div>
-                    </div>
-                </div>
-
-                <div class="help-tip-box">
-                    <div class="help-tip-icon">💡</div>
-                    <div class="help-tip-content">
-                        <strong>Кнопка «Просмотр»</strong>
-                        <p>Позволяет пройти тест как студент. Используйте чтобы проверить всё ли правильно настроено перед раздачей ссылки.</p>
+                        <p>Включите перемешивание вопросов и ответов — это самый простой способ снизить списывание на контрольных.</p>
                     </div>
                 </div>
             </div>
@@ -837,121 +511,74 @@ function getHelpSections() {
         // ==========================================
         'questions': `
             <div class="help-section">
-                <h1>❓ Вопросы</h1>
-                <p class="help-subtitle">Вопросы — сердце любого теста. Вот как с ними работать.</p>
+                <h2 class="help-subtitle">❓ Вопросы</h2>
+                <p class="help-text">Система поддерживает 5 типов вопросов. Каждый вопрос можно сопроводить изображением, формулой или подсказкой.</p>
 
-                <h2>Как добавить вопрос</h2>
-                <div class="help-steps-mini">
-                    <div class="step-mini">
-                        <span class="step-mini-num">1</span>
-                        <span>На карточке теста нажмите <strong>«Вопросы»</strong></span>
+                <h3 class="help-subtitle">📋 Типы вопросов</h3>
+
+                <div class="help-tabs-explain">
+                    <div class="help-tab-card">
+                        <div class="tab-card-icon">🔘</div>
+                        <div class="tab-card-content">
+                            <h4>Одиночный выбор</h4>
+                            <p>Один правильный ответ из нескольких вариантов. Самый распространённый тип — подходит для проверки знания фактов, определений, формул.</p>
+                        </div>
+                        <span class="tab-card-tag">radio</span>
                     </div>
-                    <div class="step-mini">
-                        <span class="step-mini-num">2</span>
-                        <span>Нажмите <strong>«+ Добавить вопрос»</strong></span>
+                    <div class="help-tab-card">
+                        <div class="tab-card-icon">☑️</div>
+                        <div class="tab-card-content">
+                            <h4>Множественный выбор</h4>
+                            <p>Несколько правильных ответов. Студент должен отметить все верные варианты. Частичный балл не начисляется — нужно выбрать все правильные.</p>
+                        </div>
+                        <span class="tab-card-tag">checkbox</span>
                     </div>
-                    <div class="step-mini">
-                        <span class="step-mini-num">3</span>
-                        <span>Выберите тип вопроса</span>
+                    <div class="help-tab-card">
+                        <div class="tab-card-icon">🔗</div>
+                        <div class="tab-card-content">
+                            <h4>Сопоставление</h4>
+                            <p>Соединение элементов из двух колонок. Например: термин — определение, дата — событие, автор — произведение. Перетаскивание drag-and-drop.</p>
+                        </div>
+                        <span class="tab-card-tag">matching</span>
                     </div>
-                    <div class="step-mini">
-                        <span class="step-mini-num">4</span>
-                        <span>Введите текст вопроса и варианты ответов</span>
+                    <div class="help-tab-card">
+                        <div class="tab-card-icon">🔢</div>
+                        <div class="tab-card-content">
+                            <h4>Расстановка по порядку</h4>
+                            <p>Расположите элементы в правильной последовательности. Подходит для алгоритмов, хронологии, этапов процесса.</p>
+                        </div>
+                        <span class="tab-card-tag">sequence</span>
                     </div>
-                    <div class="step-mini">
-                        <span class="step-mini-num">5</span>
-                        <span>Отметьте правильный ответ</span>
-                    </div>
-                    <div class="step-mini">
-                        <span class="step-mini-num">6</span>
-                        <span>Нажмите <strong>«Сохранить»</strong></span>
+                    <div class="help-tab-card">
+                        <div class="tab-card-icon">✏️</div>
+                        <div class="tab-card-content">
+                            <h4>Короткий ответ</h4>
+                            <p>Студент вводит ответ текстом. Проверка без учёта регистра. Можно задать несколько допустимых вариантов ответа.</p>
+                        </div>
+                        <span class="tab-card-tag">text</span>
                     </div>
                 </div>
 
-                <h2>Типы вопросов</h2>
-                <div class="help-question-types">
-                    <div class="qtype-card">
-                        <div class="qtype-icon">🔘</div>
-                        <div class="qtype-content">
-                            <h3>Один правильный ответ</h3>
-                            <p>Студент выбирает один вариант из нескольких. Самый популярный тип.</p>
-                            <div class="qtype-example">
-                                <div class="qtype-q">Сколько будет 2+2?</div>
-                                <div class="qtype-answers">
-                                    <label><input type="radio" disabled> 3</label>
-                                    <label><input type="radio" checked disabled> 4</label>
-                                    <label><input type="radio" disabled> 5</label>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                <h3 class="help-subtitle">🖼️ Изображения</h3>
+                <p class="help-text">К вопросу и к каждому варианту ответа можно прикрепить изображение. Поддерживаются форматы JPG, PNG, GIF. Максимальный размер — 5 МБ.</p>
 
-                    <div class="qtype-card">
-                        <div class="qtype-icon">☑️</div>
-                        <div class="qtype-content">
-                            <h3>Несколько правильных ответов</h3>
-                            <p>Студент должен отметить все правильные варианты.</p>
-                            <div class="qtype-example">
-                                <div class="qtype-q">Какие числа чётные?</div>
-                                <div class="qtype-answers">
-                                    <label><input type="checkbox" checked disabled> 2</label>
-                                    <label><input type="checkbox" disabled> 3</label>
-                                    <label><input type="checkbox" checked disabled> 4</label>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                <h3 class="help-subtitle">📂 Разделы вопросов</h3>
+                <p class="help-text">Вопросы можно группировать по разделам (секциям). Это удобно, когда в одном тесте собраны вопросы из разных тем или глав.</p>
 
-                    <div class="qtype-card">
-                        <div class="qtype-icon">✏️</div>
-                        <div class="qtype-content">
-                            <h3>Короткий ответ</h3>
-                            <p>Студент печатает ответ. Можно задать несколько правильных вариантов (разные формулировки).</p>
-                            <div class="qtype-example">
-                                <div class="qtype-q">Столица России?</div>
-                                <div class="qtype-input">
-                                    <input type="text" placeholder="Введите ответ..." disabled>
-                                </div>
-                                <div class="qtype-hint">Правильные варианты: Москва, москва</div>
-                            </div>
-                        </div>
-                    </div>
+                <h3 class="help-subtitle">🎲 Варианты для среза</h3>
+                <p class="help-text">В режиме среза вопросы можно распределить по вариантам. Каждый студент получит вопросы только своего варианта.</p>
 
-                    <div class="qtype-card">
-                        <div class="qtype-icon">🔗</div>
-                        <div class="qtype-content">
-                            <h3>Сопоставление</h3>
-                            <p>Студент соединяет элементы из левого столбца с элементами правого.</p>
-                            <div class="qtype-example">
-                                <div class="qtype-q">Соотнесите страны и столицы:</div>
-                                <div class="qtype-matching">
-                                    <span>Россия</span> ↔ <span>Москва</span>
-                                    <span>Франция</span> ↔ <span>Париж</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                <h3 class="help-subtitle">🗑️ Массовое удаление</h3>
+                <p class="help-text">Отметьте несколько вопросов чекбоксами и удалите одним нажатием. Удобно при очистке банка вопросов.</p>
 
-                    <div class="qtype-card">
-                        <div class="qtype-icon">📋</div>
-                        <div class="qtype-content">
-                            <h3>Последовательность</h3>
-                            <p>Студент расставляет элементы в правильном порядке перетаскиванием.</p>
-                            <div class="qtype-example">
-                                <div class="qtype-q">Расположите числа по возрастанию:</div>
-                                <div class="qtype-sequence">
-                                    <span>1</span> → <span>2</span> → <span>3</span> → <span>4</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                <h3 class="help-subtitle">📊 Уровни сложности</h3>
+                <p class="help-text">Каждому вопросу можно назначить уровень сложности. Это влияет на аналитику — вы увидите, какие уровни студенты осваивают хуже.</p>
 
                 <div class="help-tip-box">
                     <div class="help-tip-icon">💡</div>
                     <div class="help-tip-content">
-                        <strong>Формулы LaTeX</strong>
-                        <p>Можно вставлять математические формулы. Оберните формулу в \\( ... \\) для inline или \\[ ... \\] для отдельной строки. Пример: \\(x^2 + y^2 = z^2\\)</p>
+                        <strong>Совет</strong>
+                        <p>Создавайте больше вопросов, чем нужно для одного теста. Если в тесте 20 вопросов, а в банке 50 — каждый студент получит уникальный набор.</p>
                     </div>
                 </div>
             </div>
@@ -962,70 +589,92 @@ function getHelpSections() {
         // ==========================================
         'gift': `
             <div class="help-section">
-                <h1>📥 Импорт из GIFT</h1>
-                <p class="help-subtitle">GIFT — это текстовый формат для вопросов. Позволяет быстро загрузить много вопросов сразу.</p>
+                <h2 class="help-subtitle">📥 Импорт GIFT</h2>
+                <p class="help-text">GIFT — текстовый формат для описания тестовых вопросов, изначально разработанный для Moodle. Он позволяет быстро создавать десятки вопросов в обычном текстовом файле.</p>
 
-                <h2>Как импортировать</h2>
+                <h3 class="help-subtitle">📄 Что такое формат GIFT</h3>
+                <p class="help-text">Каждый вопрос записывается в несколько строк. Правильный ответ помечается символом <code>=</code>, неправильный — символом <code>~</code>. Вопросы разделяются пустой строкой.</p>
+
+                <h3 class="help-subtitle">✍️ Примеры синтаксиса</h3>
+
+                <div class="help-note-box">
+                    <div class="help-note-icon">📝</div>
+                    <div class="help-note-content">
+                        <strong>Одиночный выбор:</strong>
+<pre style="background:#f5f5f5;padding:12px;border-radius:8px;margin:8px 0;overflow-x:auto;">Столица России? {
+    =Москва
+    ~Санкт-Петербург
+    ~Новосибирск
+    ~Казань
+}</pre>
+                    </div>
+                </div>
+
+                <div class="help-note-box">
+                    <div class="help-note-icon">📝</div>
+                    <div class="help-note-content">
+                        <strong>Множественный выбор:</strong>
+<pre style="background:#f5f5f5;padding:12px;border-radius:8px;margin:8px 0;overflow-x:auto;">Какие из этих языков компилируемые? {
+    ~%50%C++
+    ~%50%Rust
+    ~%-50%Python
+    ~%-50%JavaScript
+}</pre>
+                    </div>
+                </div>
+
+                <div class="help-note-box">
+                    <div class="help-note-icon">📝</div>
+                    <div class="help-note-content">
+                        <strong>Короткий ответ:</strong>
+<pre style="background:#f5f5f5;padding:12px;border-radius:8px;margin:8px 0;overflow-x:auto;">Как называется протокол передачи гипертекста? {
+    =HTTP
+    =http
+}</pre>
+                    </div>
+                </div>
+
+                <h3 class="help-subtitle">📤 Как импортировать</h3>
                 <div class="help-steps-mini">
                     <div class="step-mini">
-                        <span class="step-mini-num">1</span>
-                        <span>Откройте вопросы теста (кнопка «Вопросы»)</span>
+                        <div class="step-mini-num">1</div>
+                        <span>Откройте тест, в который хотите добавить вопросы</span>
                     </div>
                     <div class="step-mini">
-                        <span class="step-mini-num">2</span>
-                        <span>Нажмите <strong>«Импорт GIFT»</strong></span>
+                        <div class="step-mini-num">2</div>
+                        <span>Нажмите кнопку <strong>«Импорт GIFT»</strong></span>
                     </div>
                     <div class="step-mini">
-                        <span class="step-mini-num">3</span>
-                        <span>Вставьте текст в формате GIFT</span>
+                        <div class="step-mini-num">3</div>
+                        <span>Вставьте текст в формате GIFT или загрузите файл <code>.gift</code> / <code>.txt</code></span>
                     </div>
                     <div class="step-mini">
-                        <span class="step-mini-num">4</span>
-                        <span>Нажмите <strong>«Импортировать»</strong></span>
+                        <div class="step-mini-num">4</div>
+                        <span>Система покажет предпросмотр распознанных вопросов — проверьте и нажмите <strong>«Импортировать»</strong></span>
                     </div>
                 </div>
 
-                <h2>Примеры формата GIFT</h2>
-
-                <div class="help-code-block">
-                    <div class="code-title">Один правильный ответ:</div>
-                    <pre>Сколько будет 2+2? {
-    =4
-    ~3
-    ~5
-    ~6
-}</pre>
+                <h3 class="help-subtitle">✅ Поддерживаемые типы</h3>
+                <div class="help-legend">
+                    <div class="help-legend-item">
+                        <div class="legend-icon">🔘</div>
+                        <div class="legend-content">Одиночный выбор (один ответ с <code>=</code>)</div>
+                    </div>
+                    <div class="help-legend-item">
+                        <div class="legend-icon">☑️</div>
+                        <div class="legend-content">Множественный выбор (проценты <code>%50%</code>)</div>
+                    </div>
+                    <div class="help-legend-item">
+                        <div class="legend-icon">✏️</div>
+                        <div class="legend-content">Короткий ответ (текстовый ввод)</div>
+                    </div>
                 </div>
 
-                <div class="help-code-block">
-                    <div class="code-title">Несколько правильных ответов:</div>
-                    <pre>Выберите чётные числа {
-    ~%50%2
-    ~%-50%3
-    ~%50%4
-    ~%-50%5
-}</pre>
-                </div>
-
-                <div class="help-code-block">
-                    <div class="code-title">Короткий ответ:</div>
-                    <pre>Столица России? {=Москва =москва}</pre>
-                </div>
-
-                <div class="help-code-block">
-                    <div class="code-title">Сопоставление:</div>
-                    <pre>Соотнесите страны и столицы {
-    =Россия -> Москва
-    =Франция -> Париж
-    =Германия -> Берлин
-}</pre>
-                </div>
-
-                <div class="help-tip-box">
-                    <div class="help-tip-icon">💡</div>
-                    <div class="help-tip-content">
-                        <strong>Где взять GIFT?</strong>
-                        <p>Многие системы умеют экспортировать в GIFT: Moodle, iSpring и др. Также можно найти готовые вопросы в интернете или написать самому в текстовом редакторе.</p>
+                <div class="help-warning-box">
+                    <div class="help-warning-icon">⚠️</div>
+                    <div class="help-warning-content">
+                        <strong>Обратите внимание</strong>
+                        <p>Сопоставление и расстановка по порядку через GIFT не импортируются — их нужно создавать вручную.</p>
                     </div>
                 </div>
             </div>
@@ -1036,217 +685,75 @@ function getHelpSections() {
         // ==========================================
         'access': `
             <div class="help-section">
-                <h1>🔗 Доступ к тестам</h1>
-                <p class="help-subtitle">Одна страница для всех тестов — студенты вводят код и система сама определяет режим.</p>
+                <h2 class="help-subtitle">🔗 Ссылка студентам</h2>
+                <p class="help-text">Есть несколько способов дать студентам доступ к тесту. Выберите наиболее удобный.</p>
 
-                <div class="help-mode-info" style="margin-bottom: 24px;">
-                    <div class="mode-icon blue">🚀</div>
-                    <div class="mode-details">
-                        <h3>Единая ссылка для студентов:</h3>
-                        <div class="mode-url-big">kst-test.ru/start</div>
-                        <ul>
-                            <li>Студент вводит <strong>любой код</strong> (5 цифр или 6 цифр)</li>
-                            <li>Система <strong>автоматически</strong> определяет тип теста</li>
-                            <li>Не нужно запоминать разные ссылки</li>
-                        </ul>
-                    </div>
+                <h3 class="help-subtitle">🌐 Универсальная ссылка</h3>
+                <div class="help-student-box">
+                    <p>Все студенты заходят на один адрес:</p>
+                    <h3 style="text-align:center;color:#4f46e5;margin:12px 0;">kst-test.ru/start</h3>
+                    <p>Там вводят код теста (5 или 6 цифр) — и попадают прямо в тест.</p>
                 </div>
 
-                <h2>Четыре режима тестирования</h2>
-                <div class="help-modes-comparison">
-                    <div class="mode-compare-card">
-                        <div class="mode-header green">
-                            <span class="mode-icon">📖</span>
-                            <h3>Тренировка</h3>
-                        </div>
-                        <div class="mode-body">
-                            <ul>
-                                <li>Студент вводит <strong>код теста</strong> (6 цифр)</li>
-                                <li>Сразу видит <strong>правильные ответы</strong></li>
-                                <li>Для самоподготовки дома</li>
-                            </ul>
-                        </div>
-                    </div>
+                <h3 class="help-subtitle">🔢 Короткие коды</h3>
+                <p class="help-text">Код отображается на карточке теста в интерфейсе преподавателя. Для обычных тестов и тренировок — это общий 6-значный код. Для зачётов и срезов — персональные 5-значные коды, выдаваемые каждому участнику.</p>
 
-                    <div class="mode-compare-card">
-                        <div class="mode-header blue">
-                            <span class="mode-icon">📝</span>
-                            <h3>Контрольная работа</h3>
-                        </div>
-                        <div class="mode-body">
-                            <ul>
-                                <li>Студент вводит <strong>код теста</strong> (6 цифр)</li>
-                                <li>Полноценный тест <strong>с античитами</strong></li>
-                                <li>Для проверки знаний на занятии</li>
-                            </ul>
-                        </div>
-                    </div>
+                <h3 class="help-subtitle">🔗 Прямая ссылка</h3>
+                <p class="help-text">На карточке теста есть кнопка <strong>«Скопировать ссылку»</strong>. Она генерирует прямую ссылку вида <code>kst-test.ru/start?code=123456</code>, которую можно отправить в чат, мессенджер или на почту.</p>
 
-                    <div class="mode-compare-card">
-                        <div class="mode-header orange">
-                            <span class="mode-icon">🎓</span>
-                            <h3>Зачёт</h3>
-                        </div>
-                        <div class="mode-body">
-                            <ul>
-                                <li>Студент вводит <strong>персональный код</strong> (5 цифр)</li>
-                                <li>ФИО определяется автоматически</li>
-                                <li>Для официальных зачётов</li>
-                            </ul>
-                        </div>
-                    </div>
-
-                    <div class="mode-compare-card">
-                        <div class="mode-header red">
-                            <span class="mode-icon">📊</span>
-                            <h3>Срез</h3>
-                        </div>
-                        <div class="mode-body">
-                            <ul>
-                                <li>Студент вводит <strong>персональный код</strong> (5 цифр)</li>
-                                <li>У каждого свой <strong>вариант</strong></li>
-                                <li>Для массовых контрольных работ</li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-
-                <h2>Как раздать тест студентам</h2>
-                <div class="help-steps-mini">
-                    <div class="step-mini">
-                        <span class="step-mini-num">1</span>
-                        <span>На карточке теста нажмите <strong>«Доступ»</strong></span>
-                    </div>
-                    <div class="step-mini">
-                        <span class="step-mini-num">2</span>
-                        <span>Скопируйте <strong>короткий код</strong> (6 цифр, например: 847291)</span>
-                    </div>
-                    <div class="step-mini">
-                        <span class="step-mini-num">3</span>
-                        <span>Скажите студентам: «Откройте <strong>kst-test.ru/start</strong> и введите код»</span>
-                    </div>
-                </div>
+                <h3 class="help-subtitle">📱 QR-код</h3>
+                <p class="help-text">Для каждого теста можно сгенерировать QR-код. Распечатайте его и повесьте в аудитории — студенты отсканируют камерой телефона и сразу попадут в тест.</p>
 
                 <div class="help-tip-box">
                     <div class="help-tip-icon">💡</div>
                     <div class="help-tip-content">
-                        <strong>Универсальная ссылка</strong>
-                        <p>Студентам достаточно запомнить одну ссылку <strong>kst-test.ru/start</strong> — она работает для всех режимов: тренировки, контрольной, зачёта и среза.</p>
-                    </div>
-                </div>
-
-                <div class="help-tip-box">
-                    <div class="help-tip-icon">💡</div>
-                    <div class="help-tip-content">
-                        <strong>QR-код и полная ссылка</strong>
-                        <p>В окне «Доступ» также есть QR-код и полная ссылка. Можно отправить ссылку в мессенджер или показать QR-код на проекторе.</p>
+                        <strong>Совет для очных занятий</strong>
+                        <p>Напишите код на доске крупными цифрами или выведите QR-код через проектор — так все студенты подключатся за минуту.</p>
                     </div>
                 </div>
             </div>
         `,
 
         // ==========================================
-        // ТРЕНИРОВКА И КОНТРОЛЬНАЯ РАБОТА
+        // ТРЕНИРОВКА
         // ==========================================
         'training': `
             <div class="help-section">
-                <h1>📝 Тренировка и контрольная работа</h1>
-                <p class="help-subtitle">Оба режима используют одну ссылку <strong>/test</strong>, но отличаются настройками.</p>
-
-                <div class="help-modes-comparison" style="margin-bottom: 24px;">
-                    <div class="mode-compare-card">
-                        <div class="mode-header green">
-                            <span class="mode-icon">📖</span>
-                            <h3>Тренировка</h3>
-                        </div>
-                        <div class="mode-body">
-                            <ul>
-                                <li>Студент видит <strong>правильные ответы</strong> после каждого вопроса</li>
-                                <li>Для самоподготовки дома</li>
-                                <li>Можно проходить много раз</li>
-                                <li>Включите галочку «Показывать правильные ответы»</li>
-                            </ul>
-                        </div>
-                    </div>
-
-                    <div class="mode-compare-card">
-                        <div class="mode-header blue">
-                            <span class="mode-icon">📝</span>
-                            <h3>Контрольная работа</h3>
-                        </div>
-                        <div class="mode-body">
-                            <ul>
-                                <li>Полноценный тест <strong>со всеми античитами</strong></li>
-                                <li>Правильные ответы <strong>скрыты</strong></li>
-                                <li>Для проверки знаний на занятии</li>
-                                <li>Без персональных кодов (в отличие от зачёта)</li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
+                <h2 class="help-subtitle">🎯 Тренировка</h2>
+                <p class="help-text">Режим тренировки — это практика перед настоящим тестом. Студент сразу видит, правильно ли он ответил, и какой ответ был верным.</p>
 
                 <div class="help-mode-info">
-                    <div class="mode-icon blue">📝</div>
+                    <div class="mode-icon">🎯</div>
                     <div class="mode-details">
-                        <h3>Ссылка для студентов:</h3>
-                        <div class="mode-url-big">kst-test.ru/start</div>
-                        <ul>
-                            <li>Студент вводит <strong>код теста</strong> (6 цифр)</li>
-                            <li>Сам указывает своё ФИО и группу</li>
-                            <li>Работают все античиты (таймер, перемешивание, отслеживание)</li>
-                        </ul>
+                        <h4>Как это работает</h4>
+                        <p>После ответа на каждый вопрос студент видит результат: зелёным подсвечивается правильный ответ, красным — ошибочный. Можно сразу понять свои пробелы.</p>
                     </div>
                 </div>
 
-                <h2>Как раздать тест студентам</h2>
-                <div class="help-steps-mini">
-                    <div class="step-mini">
-                        <span class="step-mini-num">1</span>
-                        <span>На карточке теста нажмите <strong>«Доступ»</strong></span>
+                <h3 class="help-subtitle">Когда использовать</h3>
+                <div class="help-legend">
+                    <div class="help-legend-item">
+                        <div class="legend-icon">✅</div>
+                        <div class="legend-content">Самоподготовка студентов перед контрольной</div>
                     </div>
-                    <div class="step-mini">
-                        <span class="step-mini-num">2</span>
-                        <span>Скопируйте <strong>короткий код</strong> (6 цифр)</span>
+                    <div class="help-legend-item">
+                        <div class="legend-icon">✅</div>
+                        <div class="legend-content">Домашнее задание — студенты могут проходить тренировку сколько угодно раз</div>
                     </div>
-                    <div class="step-mini">
-                        <span class="step-mini-num">3</span>
-                        <span>Скажите студентам: «Откройте <strong>kst-test.ru/start</strong> и введите код»</span>
-                    </div>
-                </div>
-
-                <h2>Когда использовать</h2>
-                <div class="help-use-cases">
-                    <div class="use-case">
-                        <span class="use-icon">✅</span>
-                        <span><strong>Тренировка:</strong> Самоподготовка дома, домашние задания</span>
-                    </div>
-                    <div class="use-case">
-                        <span class="use-icon">✅</span>
-                        <span><strong>Контрольная работа:</strong> Проверка знаний на уроке, контрольные без вариантов</span>
-                    </div>
-                    <div class="use-case">
-                        <span class="use-icon">❌</span>
-                        <span>Нужен персональный вход — используйте <strong>/exam</strong></span>
-                    </div>
-                    <div class="use-case">
-                        <span class="use-icon">❌</span>
-                        <span>Контрольные по вариантам — используйте <strong>/srez</strong></span>
+                    <div class="help-legend-item">
+                        <div class="legend-icon">✅</div>
+                        <div class="legend-content">Проверка теста преподавателем перед контрольной</div>
                     </div>
                 </div>
 
-                <div class="help-tip-box">
-                    <div class="help-tip-icon">💡</div>
-                    <div class="help-tip-content">
-                        <strong>Как включить тренировку?</strong>
-                        <p>В настройках теста поставьте галочку «Показывать правильные ответы». Тогда студент после каждого вопроса будет видеть правильный ответ.</p>
-                    </div>
-                </div>
+                <h3 class="help-subtitle">⚙️ Как включить</h3>
+                <p class="help-text">При создании или редактировании теста выберите режим <strong>«Тренировка»</strong> (параметр isTrainingMode). Код доступа — 6 цифр, общий для всех студентов.</p>
 
                 <div class="help-note-box">
-                    <div class="help-note-icon">📝</div>
+                    <div class="help-note-icon">📌</div>
                     <div class="help-note-content">
-                        <strong>Это режим по умолчанию</strong>
-                        <p>Когда вы создаёте тест — он автоматически доступен по ссылке /test. Все античиты работают, правильные ответы скрыты.</p>
+                        <strong>Примечание</strong>
+                        <p>Результаты тренировок тоже сохраняются — вы сможете видеть, кто тренировался и какие баллы набирал.</p>
                     </div>
                 </div>
             </div>
@@ -1257,81 +764,61 @@ function getHelpSections() {
         // ==========================================
         'exam': `
             <div class="help-section">
-                <h1>🎓 Зачёт</h1>
-                <p class="help-subtitle">Для официальных зачётов и экзаменов. У каждого студента персональный код — нельзя зайти под чужим именем.</p>
+                <h2 class="help-subtitle">🎓 Зачёт</h2>
+                <p class="help-text">Зачёт — самый серьёзный режим. Каждый студент получает персональный 5-значный код, количество попыток ограничено, есть проходной балл.</p>
 
-                <div class="help-mode-info">
-                    <div class="mode-icon orange">🎓</div>
-                    <div class="mode-details">
-                        <h3>Ссылка для студентов:</h3>
-                        <div class="mode-url-big">kst-test.ru/start</div>
-                        <ul>
-                            <li>Студент вводит <strong>персональный код</strong> (5 цифр)</li>
-                            <li>ФИО определяется <strong>автоматически</strong> по коду</li>
-                            <li>Можно пройти <strong>только один раз</strong></li>
-                            <li>Вы контролируете кто может войти</li>
-                        </ul>
-                    </div>
-                </div>
+                <h3 class="help-subtitle">📋 Список участников</h3>
+                <p class="help-text">Перед проведением зачёта нужно сформировать список участников. Это можно сделать тремя способами:</p>
 
-                <h2>Как подготовить зачёт</h2>
                 <div class="help-steps-mini">
                     <div class="step-mini">
-                        <span class="step-mini-num">1</span>
-                        <span>Создайте группу студентов (вкладка «Группы»)</span>
+                        <div class="step-mini-num">1</div>
+                        <span><strong>Вручную</strong> — добавьте студентов по ФИО</span>
                     </div>
                     <div class="step-mini">
-                        <span class="step-mini-num">2</span>
-                        <span>На карточке теста нажмите <strong>«Зачёт»</strong></span>
+                        <div class="step-mini-num">2</div>
+                        <span><strong>Из группы</strong> — выберите группу, и все её студенты будут добавлены</span>
                     </div>
                     <div class="step-mini">
-                        <span class="step-mini-num">3</span>
-                        <span>Выберите группу и нажмите <strong>«Сгенерировать коды»</strong></span>
-                    </div>
-                    <div class="step-mini">
-                        <span class="step-mini-num">4</span>
-                        <span>Распечатайте коды или держите на экране</span>
+                        <div class="step-mini-num">3</div>
+                        <span><strong>Из Excel</strong> — загрузите файл со списком (ФИО в одном столбце)</span>
                     </div>
                 </div>
 
-                <h2>Как проводить</h2>
-                <div class="help-exam-flow">
-                    <div class="exam-step">
-                        <div class="exam-step-icon">1️⃣</div>
-                        <div class="exam-step-content">
-                            <strong>Студент открывает kst-test.ru/start</strong>
-                            <p>Напишите ссылку на доске или продиктуйте.</p>
-                        </div>
+                <h3 class="help-subtitle">🎫 Карточки с кодами</h3>
+                <p class="help-text">После добавления участников система автоматически генерирует персональный 5-значный код для каждого студента. Вы можете:</p>
+                <div class="help-legend">
+                    <div class="help-legend-item">
+                        <div class="legend-icon">🖨️</div>
+                        <div class="legend-content"><strong>Распечатать PDF-карточки</strong> — красивые карточки с ФИО и кодом для раздачи в аудитории</div>
                     </div>
-                    <div class="exam-step">
-                        <div class="exam-step-icon">2️⃣</div>
-                        <div class="exam-step-content">
-                            <strong>Вы называете код студенту</strong>
-                            <p>Код из 5 цифр. Каждому свой код!</p>
-                        </div>
-                    </div>
-                    <div class="exam-step">
-                        <div class="exam-step-icon">3️⃣</div>
-                        <div class="exam-step-content">
-                            <strong>Студент вводит код и видит своё ФИО</strong>
-                            <p>Если ФИО правильное — нажимает «Начать зачёт».</p>
-                        </div>
+                    <div class="help-legend-item">
+                        <div class="legend-icon">📋</div>
+                        <div class="legend-content"><strong>Скопировать список</strong> — таблица ФИО + код для отправки в чат</div>
                     </div>
                 </div>
 
-                <div class="help-tip-box">
-                    <div class="help-tip-icon">💡</div>
-                    <div class="help-tip-content">
-                        <strong>Чем отличается от тренировки?</strong>
-                        <p>В тренировке студент сам вводит ФИО (может ввести чужое). В зачёте — ФИО определяется автоматически по коду. Подмена невозможна.</p>
-                    </div>
+                <h3 class="help-subtitle">⚙️ Дополнительные настройки</h3>
+                <div class="help-summary-table">
+                    <table>
+                        <thead>
+                            <tr><th>Параметр</th><th>Описание</th></tr>
+                        </thead>
+                        <tbody>
+                            <tr><td><strong>Макс. попыток</strong></td><td>Сколько раз студент может пройти зачёт (по умолчанию — 1)</td></tr>
+                            <tr><td><strong>Проходной балл</strong></td><td>Минимальный процент для получения «зачтено»</td></tr>
+                        </tbody>
+                    </table>
                 </div>
+
+                <h3 class="help-subtitle">📡 Мониторинг зачёта</h3>
+                <p class="help-text">Во время проведения зачёта вы видите в реальном времени: кто начал, кто проходит, кто завершил. Это помогает контролировать процесс прямо из кабинета.</p>
 
                 <div class="help-warning-box">
                     <div class="help-warning-icon">⚠️</div>
                     <div class="help-warning-content">
-                        <strong>Код одноразовый!</strong>
-                        <p>Каждый код работает только один раз. Если студент случайно закрыл браузер — сгенерируйте ему новый код.</p>
+                        <strong>Важно</strong>
+                        <p>Не забудьте добавить участников до начала зачёта — без персонального кода студент не сможет войти в тест.</p>
                     </div>
                 </div>
             </div>
@@ -1342,144 +829,66 @@ function getHelpSections() {
         // ==========================================
         'srez': `
             <div class="help-section">
-                <h1>📊 Административный срез</h1>
-                <p class="help-subtitle">Как зачёт, но с вариантами. Каждый студент получает свой вариант контрольной.</p>
+                <h2 class="help-subtitle">📊 Срез</h2>
+                <p class="help-text">Административный срез — расширенный вариант зачёта с поддержкой вариантов. Используется для масштабных проверок, когда нужно разделить студентов по вариантам.</p>
 
-                <div class="help-mode-info">
-                    <div class="mode-icon red">📊</div>
-                    <div class="mode-details">
-                        <h3>Ссылка для студентов:</h3>
-                        <div class="mode-url-big">kst-test.ru/start</div>
-                        <ul>
-                            <li>Студент вводит <strong>персональный код</strong> (5 цифр)</li>
-                            <li>ФИО и <strong>вариант</strong> определяются автоматически</li>
-                            <li>Можно пройти <strong>только один раз</strong></li>
-                            <li>Для массовых контрольных работ</li>
-                        </ul>
+                <h3 class="help-subtitle">📝 Чем срез отличается от зачёта</h3>
+                <div class="help-legend">
+                    <div class="help-legend-item">
+                        <div class="legend-icon">📊</div>
+                        <div class="legend-content"><strong>Варианты</strong> — вопросы распределяются по вариантам, каждый студент получает свой</div>
+                    </div>
+                    <div class="help-legend-item">
+                        <div class="legend-icon">📡</div>
+                        <div class="legend-content"><strong>Мониторинг</strong> — расширенная вкладка отслеживания прогресса в реальном времени</div>
+                    </div>
+                    <div class="help-legend-item">
+                        <div class="legend-icon">📄</div>
+                        <div class="legend-content"><strong>Отчёты</strong> — экспорт в Word для официальных отчётов</div>
                     </div>
                 </div>
 
-                <h2>Чем отличается от зачёта?</h2>
-                <div class="help-comparison">
-                    <div class="compare-item">
-                        <span class="compare-label">Зачёт:</span>
-                        <span>Все студенты отвечают на одни и те же вопросы</span>
-                    </div>
-                    <div class="compare-item">
-                        <span class="compare-label">Срез:</span>
-                        <span>У каждого студента <strong>свой вариант</strong> с разными вопросами</span>
-                    </div>
-                </div>
-
-                <h2>Как подготовить срез</h2>
+                <h3 class="help-subtitle">🎲 Назначение вариантов</h3>
+                <p class="help-text">Варианты можно назначить двумя способами:</p>
                 <div class="help-steps-mini">
                     <div class="step-mini">
-                        <span class="step-mini-num">1</span>
-                        <span>Создайте группу студентов (вкладка «Группы»)</span>
+                        <div class="step-mini-num">А</div>
+                        <span><strong>Автоматически</strong> — система сама распределит студентов по вариантам равномерно</span>
                     </div>
                     <div class="step-mini">
-                        <span class="step-mini-num">2</span>
-                        <span>На карточке теста нажмите <strong>«Срез»</strong></span>
-                    </div>
-                    <div class="step-mini">
-                        <span class="step-mini-num">3</span>
-                        <span>Выберите группу и укажите <strong>сколько вариантов</strong></span>
-                    </div>
-                    <div class="step-mini">
-                        <span class="step-mini-num">4</span>
-                        <span>Студенты автоматически распределятся по вариантам</span>
-                    </div>
-                    <div class="step-mini">
-                        <span class="step-mini-num">5</span>
-                        <span>Нажмите <strong>«Сгенерировать коды»</strong></span>
+                        <div class="step-mini-num">Б</div>
+                        <span><strong>Вручную</strong> — вы сами указываете, кому какой вариант достанется</span>
                     </div>
                 </div>
 
-                <h2>Как проводить</h2>
-                <div class="help-exam-flow">
-                    <div class="exam-step">
-                        <div class="exam-step-icon">1️⃣</div>
-                        <div class="exam-step-content">
-                            <strong>Студент открывает kst-test.ru/start</strong>
-                            <p>Напишите ссылку на доске.</p>
-                        </div>
+                <h3 class="help-subtitle">📡 Вкладка мониторинга</h3>
+                <p class="help-text">Во время среза откройте вкладку <strong>«Мониторинг»</strong>. Вы увидите:</p>
+                <div class="help-legend">
+                    <div class="help-legend-item">
+                        <div class="legend-icon">🟢</div>
+                        <div class="legend-content">Кто уже начал тест</div>
                     </div>
-                    <div class="exam-step">
-                        <div class="exam-step-icon">2️⃣</div>
-                        <div class="exam-step-content">
-                            <strong>Вы называете код студенту</strong>
-                            <p>Код из 5 цифр. Вариант привязан к коду.</p>
-                        </div>
+                    <div class="help-legend-item">
+                        <div class="legend-icon">🔵</div>
+                        <div class="legend-content">Кто проходит прямо сейчас (с прогрессом в процентах)</div>
                     </div>
-                    <div class="exam-step">
-                        <div class="exam-step-icon">3️⃣</div>
-                        <div class="exam-step-content">
-                            <strong>Студент видит ФИО и свой вариант</strong>
-                            <p>Например: «Иванов Иван — Вариант 2».</p>
-                        </div>
+                    <div class="help-legend-item">
+                        <div class="legend-icon">✅</div>
+                        <div class="legend-content">Кто завершил и с каким результатом</div>
+                    </div>
+                    <div class="help-legend-item">
+                        <div class="legend-icon">⚪</div>
+                        <div class="legend-content">Кто ещё не начал</div>
                     </div>
                 </div>
+
+                <img src="/help-img/09-monitoring.png" alt="Вкладка мониторинга среза" class="help-screenshot" style="width:100%;border-radius:12px;border:1px solid #e5e5e5;margin:16px 0;">
 
                 <div class="help-tip-box">
                     <div class="help-tip-icon">💡</div>
                     <div class="help-tip-content">
-                        <strong>Откуда берутся варианты?</strong>
-                        <p>Вопросы для вариантов берутся из пула вопросов теста и распределяются случайным образом. Или вы можете создать отдельные тесты для каждого варианта.</p>
-                    </div>
-                </div>
-            </div>
-        `,
-
-        // ==========================================
-        // ГРУППЫ
-        // ==========================================
-        'groups': `
-            <div class="help-section">
-                <h1>👥 Группы студентов</h1>
-                <p class="help-subtitle">Списки студентов с фотографиями. Нужны для зачётов и срезов.</p>
-
-                <h2>Как создать группу</h2>
-                <div class="help-steps-mini">
-                    <div class="step-mini">
-                        <span class="step-mini-num">1</span>
-                        <span>Перейдите на вкладку <strong>«Группы»</strong></span>
-                    </div>
-                    <div class="step-mini">
-                        <span class="step-mini-num">2</span>
-                        <span>Нажмите <strong>«+ Создать группу»</strong></span>
-                    </div>
-                    <div class="step-mini">
-                        <span class="step-mini-num">3</span>
-                        <span>Введите название группы (например: «ИС-21»)</span>
-                    </div>
-                </div>
-
-                <h2>Как добавить студентов</h2>
-                <div class="help-methods">
-                    <div class="method-card">
-                        <div class="method-icon">👤</div>
-                        <div class="method-content">
-                            <h3>Вручную</h3>
-                            <p>Нажмите «+ Добавить студента» и введите ФИО.</p>
-                        </div>
-                    </div>
-                    <div class="method-card">
-                        <div class="method-icon">📄</div>
-                        <div class="method-content">
-                            <h3>Из Excel</h3>
-                            <p>Нажмите «Импорт» и загрузите файл Excel со списком студентов.</p>
-                        </div>
-                    </div>
-                </div>
-
-                <h2>Фотографии студентов</h2>
-                <p>Можно загрузить фото каждого студента. Это помогает на очном зачёте — сразу видно кто перед вами.</p>
-
-                <div class="help-tip-box">
-                    <div class="help-tip-icon">💡</div>
-                    <div class="help-tip-content">
-                        <strong>Зачем нужны группы?</strong>
-                        <p>Для обычной тренировки группы не нужны. Но для зачёта — обязательны! Без группы нельзя сгенерировать персональные коды.</p>
+                        <strong>Совет</strong>
+                        <p>Откройте мониторинг на отдельном экране или планшете — так вы будете видеть прогресс студентов, не переключаясь между вкладками.</p>
                     </div>
                 </div>
             </div>
@@ -1490,70 +899,189 @@ function getHelpSections() {
         // ==========================================
         'results': `
             <div class="help-section">
-                <h1>📋 Результаты</h1>
-                <p class="help-subtitle">Здесь все результаты тестов ваших студентов.</p>
+                <h2 class="help-subtitle">📋 Результаты</h2>
+                <p class="help-text">Все результаты тестирования сохраняются автоматически. Вы можете просмотреть их, отфильтровать, изучить подробности каждого прохождения.</p>
 
-                <h2>Как смотреть результаты</h2>
+                <img src="/help-img/04-results.png" alt="Вкладка результатов" class="help-screenshot" style="width:100%;border-radius:12px;border:1px solid #e5e5e5;margin:16px 0;">
+
+                <h3 class="help-subtitle">🔍 Фильтры</h3>
+                <p class="help-text">Используйте фильтры, чтобы быстро найти нужные результаты:</p>
+                <div class="help-legend">
+                    <div class="help-legend-item">
+                        <div class="legend-icon">👥</div>
+                        <div class="legend-content"><strong>По группе</strong> — покажет только студентов выбранной группы</div>
+                    </div>
+                    <div class="help-legend-item">
+                        <div class="legend-icon">📚</div>
+                        <div class="legend-content"><strong>По дисциплине</strong> — фильтр по предмету</div>
+                    </div>
+                    <div class="help-legend-item">
+                        <div class="legend-icon">📝</div>
+                        <div class="legend-content"><strong>По тесту</strong> — конкретный тест</div>
+                    </div>
+                    <div class="help-legend-item">
+                        <div class="legend-icon">📅</div>
+                        <div class="legend-content"><strong>По дате</strong> — период прохождения</div>
+                    </div>
+                </div>
+
+                <h3 class="help-subtitle">📄 Подробный отчёт</h3>
+                <p class="help-text">Нажмите на строку результата, чтобы открыть подробный отчёт. Там видно:</p>
                 <div class="help-steps-mini">
                     <div class="step-mini">
-                        <span class="step-mini-num">1</span>
-                        <span>Перейдите на вкладку <strong>«Результаты»</strong></span>
+                        <div class="step-mini-num">•</div>
+                        <span>Каждый вопрос и ответ студента</span>
                     </div>
                     <div class="step-mini">
-                        <span class="step-mini-num">2</span>
-                        <span>Используйте фильтры: по группе, дисциплине, тесту</span>
+                        <div class="step-mini-num">•</div>
+                        <span>Правильный ответ для сравнения</span>
                     </div>
                     <div class="step-mini">
-                        <span class="step-mini-num">3</span>
-                        <span>Нажмите на строку чтобы увидеть детали</span>
+                        <div class="step-mini-num">•</div>
+                        <span>Время на каждый вопрос</span>
+                    </div>
+                    <div class="step-mini">
+                        <div class="step-mini-num">•</div>
+                        <span>Нарушения антисписывания (переключения вкладок)</span>
                     </div>
                 </div>
 
-                <h2>Что видно в результатах</h2>
-                <div class="help-results-info">
-                    <div class="result-item">
-                        <span class="result-icon">👤</span>
-                        <span><strong>ФИО студента</strong> — кто проходил</span>
+                <h3 class="help-subtitle">📝 Заметки преподавателя</h3>
+                <p class="help-text">В каждом результате можно оставить заметку или начислить штраф. Например, если вы заметили, что студент пользовался телефоном — добавьте нарушение и снижение балла.</p>
+
+                <h3 class="help-subtitle">⚙️ Управление</h3>
+                <div class="help-legend">
+                    <div class="help-legend-item">
+                        <div class="legend-icon">📊</div>
+                        <div class="legend-content"><strong>Постраничное отображение</strong> — настройте количество записей на страницу</div>
                     </div>
-                    <div class="result-item">
-                        <span class="result-icon">📅</span>
-                        <span><strong>Дата и время</strong> — когда проходил</span>
+                    <div class="help-legend-item">
+                        <div class="legend-icon">🔄</div>
+                        <div class="legend-content"><strong>Автообновление</strong> — результаты обновляются автоматически</div>
                     </div>
-                    <div class="result-item">
-                        <span class="result-icon">✅</span>
-                        <span><strong>Правильных ответов</strong> — сколько из скольки</span>
-                    </div>
-                    <div class="result-item">
-                        <span class="result-icon">📊</span>
-                        <span><strong>Процент</strong> — в процентах</span>
-                    </div>
-                    <div class="result-item">
-                        <span class="result-icon">🎓</span>
-                        <span><strong>Оценка</strong> — автоматически по шкале</span>
-                    </div>
-                    <div class="result-item">
-                        <span class="result-icon">⏱</span>
-                        <span><strong>Время</strong> — сколько потратил на тест</span>
+                    <div class="help-legend-item">
+                        <div class="legend-icon">🗑️</div>
+                        <div class="legend-content"><strong>Удаление</strong> — удалите отдельный результат или несколько сразу (массовое удаление)</div>
                     </div>
                 </div>
 
-                <h2>Шкала оценок</h2>
-                <div class="help-grades-table">
-                    <div class="grade-row">
-                        <span class="grade-badge g5">5 (отлично)</span>
-                        <span>85% и выше</span>
+                <div class="help-tip-box">
+                    <div class="help-tip-icon">💡</div>
+                    <div class="help-tip-content">
+                        <strong>Совет</strong>
+                        <p>Обращайте внимание на столбец «Переключения вкладок» — если у студента 5+ переключений, стоит присмотреться внимательнее.</p>
                     </div>
-                    <div class="grade-row">
-                        <span class="grade-badge g4">4 (хорошо)</span>
-                        <span>70% — 84%</span>
+                </div>
+            </div>
+        `,
+
+        // ==========================================
+        // АНАЛИТИКА
+        // ==========================================
+        'analytics': `
+            <div class="help-section">
+                <h2 class="help-subtitle">📈 Аналитика</h2>
+                <p class="help-text">Аналитика помогает понять, как студенты справляются с тестами, какие вопросы самые сложные и как распределяются оценки.</p>
+
+                <img src="/help-img/05-analytics.png" alt="Вкладка аналитики" class="help-screenshot" style="width:100%;border-radius:12px;border:1px solid #e5e5e5;margin:16px 0;">
+
+                <h3 class="help-subtitle">📊 Что показывает аналитика</h3>
+                <div class="help-tabs-explain">
+                    <div class="help-tab-card">
+                        <div class="tab-card-icon">🥧</div>
+                        <div class="tab-card-content">
+                            <h4>Распределение оценок</h4>
+                            <p>Круговая диаграмма: сколько «отлично», «хорошо», «удовл.» и «неуд.». Быстро видно общую картину.</p>
+                        </div>
                     </div>
-                    <div class="grade-row">
-                        <span class="grade-badge g3">3 (удовл.)</span>
-                        <span>50% — 69%</span>
+                    <div class="help-tab-card">
+                        <div class="tab-card-icon">📏</div>
+                        <div class="tab-card-content">
+                            <h4>Средний балл</h4>
+                            <p>Общий средний балл по тесту и по каждой группе отдельно.</p>
+                        </div>
                     </div>
-                    <div class="grade-row">
-                        <span class="grade-badge g2">2 (неуд.)</span>
-                        <span>ниже 50%</span>
+                    <div class="help-tab-card">
+                        <div class="tab-card-icon">🔴</div>
+                        <div class="tab-card-content">
+                            <h4>Самые сложные вопросы</h4>
+                            <p>Вопросы, на которые ответили хуже всего. Полезно для корректировки учебного материала.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <h3 class="help-subtitle">🔍 Фильтрация</h3>
+                <p class="help-text">Выберите дисциплину и конкретный тест, чтобы увидеть аналитику по нему. Можно сравнивать результаты разных групп.</p>
+
+                <h3 class="help-subtitle">📥 Скачать отчёт</h3>
+                <p class="help-text">Нажмите кнопку <strong>«Скачать отчёт»</strong>, чтобы получить аналитику в виде файла — удобно для отчётов на кафедру.</p>
+
+                <div class="help-tip-box">
+                    <div class="help-tip-icon">💡</div>
+                    <div class="help-tip-content">
+                        <strong>Совет</strong>
+                        <p>Если большинство студентов ошибается в одном и том же вопросе — возможно, стоит перепроверить формулировку или вернуться к этой теме на занятии.</p>
+                    </div>
+                </div>
+            </div>
+        `,
+
+        // ==========================================
+        // ГРУППЫ
+        // ==========================================
+        'groups': `
+            <div class="help-section">
+                <h2 class="help-subtitle">👥 Группы</h2>
+                <p class="help-text">Управление группами студентов. Создавайте группы, добавляйте студентов вручную или из Excel, загружайте фото.</p>
+
+                <img src="/help-img/06-groups.png" alt="Вкладка групп" class="help-screenshot" style="width:100%;border-radius:12px;border:1px solid #e5e5e5;margin:16px 0;">
+
+                <h3 class="help-subtitle">➕ Создание группы</h3>
+                <div class="help-steps-mini">
+                    <div class="step-mini">
+                        <div class="step-mini-num">1</div>
+                        <span>Перейдите на вкладку <strong>«Группы»</strong></span>
+                    </div>
+                    <div class="step-mini">
+                        <div class="step-mini-num">2</div>
+                        <span>Нажмите <strong>«+ Группа»</strong></span>
+                    </div>
+                    <div class="step-mini">
+                        <div class="step-mini-num">3</div>
+                        <span>Введите название группы (например, «ИС-21»)</span>
+                    </div>
+                </div>
+
+                <h3 class="help-subtitle">👤 Добавление студентов</h3>
+                <p class="help-text">Студентов можно добавить двумя способами:</p>
+                <div class="help-legend">
+                    <div class="help-legend-item">
+                        <div class="legend-icon">✏️</div>
+                        <div class="legend-content"><strong>Вручную</strong> — введите ФИО каждого студента по одному</div>
+                    </div>
+                    <div class="help-legend-item">
+                        <div class="legend-icon">📊</div>
+                        <div class="legend-content"><strong>Из Excel</strong> — скачайте шаблон, заполните ФИО и загрузите обратно. Все студенты добавятся разом</div>
+                    </div>
+                </div>
+
+                <h3 class="help-subtitle">📷 Фото студентов</h3>
+                <p class="help-text">Для каждого студента можно загрузить фото. Это помогает при мониторинге зачётов и срезов — вы точно видите, кто проходит тест.</p>
+
+                <h3 class="help-subtitle">🏢 Автоопределение курса и корпуса</h3>
+                <p class="help-text">Система автоматически определяет курс и корпус из названия группы. Например, из «ИС-21» понятно, что это 2-й курс, 1-я подгруппа.</p>
+
+                <h3 class="help-subtitle">📁 Папки для групп</h3>
+                <p class="help-text">Если групп много, организуйте их по папкам: «1 курс», «2 курс» и т.д.</p>
+
+                <h3 class="help-subtitle">🔍 Поиск и сортировка</h3>
+                <p class="help-text">Быстро находите нужную группу по названию. Сортируйте по алфавиту, количеству студентов или дате создания.</p>
+
+                <div class="help-tip-box">
+                    <div class="help-tip-icon">💡</div>
+                    <div class="help-tip-content">
+                        <strong>Совет</strong>
+                        <p>Скачайте шаблон Excel и заполните его один раз — так вы добавите всех студентов за пару минут.</p>
                     </div>
                 </div>
             </div>
@@ -1564,44 +1092,63 @@ function getHelpSections() {
         // ==========================================
         'export': `
             <div class="help-section">
-                <h1>💾 Экспорт результатов</h1>
-                <p class="help-subtitle">Выгрузка результатов в Excel или Word.</p>
+                <h2 class="help-subtitle">💾 Экспорт</h2>
+                <p class="help-text">Система позволяет экспортировать данные в различных форматах для отчётности, анализа и архивирования.</p>
 
-                <h2>Как экспортировать</h2>
-                <div class="help-steps-mini">
-                    <div class="step-mini">
-                        <span class="step-mini-num">1</span>
-                        <span>Перейдите на вкладку <strong>«Результаты»</strong></span>
+                <h3 class="help-subtitle">📊 Форматы экспорта результатов</h3>
+                <div class="help-tabs-explain">
+                    <div class="help-tab-card">
+                        <div class="tab-card-icon">📗</div>
+                        <div class="tab-card-content">
+                            <h4>Excel (.xlsx)</h4>
+                            <p>Красиво оформленная таблица с результатами: ФИО, группа, балл, оценка, дата, время прохождения. Готовая для печати и отчётов.</p>
+                        </div>
                     </div>
-                    <div class="step-mini">
-                        <span class="step-mini-num">2</span>
-                        <span>Отфильтруйте нужные результаты</span>
+                    <div class="help-tab-card">
+                        <div class="tab-card-icon">📄</div>
+                        <div class="tab-card-content">
+                            <h4>CSV</h4>
+                            <p>Универсальный формат для импорта в любые программы: Excel, Google Sheets, базы данных. Подходит для массовой обработки.</p>
+                        </div>
                     </div>
-                    <div class="step-mini">
-                        <span class="step-mini-num">3</span>
-                        <span>Нажмите <strong>«Экспорт»</strong></span>
-                    </div>
-                    <div class="step-mini">
-                        <span class="step-mini-num">4</span>
-                        <span>Выберите формат: Excel или Word</span>
+                    <div class="help-tab-card">
+                        <div class="tab-card-icon">📝</div>
+                        <div class="tab-card-content">
+                            <h4>Word (.docx)</h4>
+                            <p>Оформленный документ для официальных отчётов по административному срезу. Готов к печати и подписи.</p>
+                        </div>
                     </div>
                 </div>
 
-                <h2>Форматы</h2>
-                <div class="help-export-formats">
-                    <div class="export-format-card">
-                        <div class="format-icon excel">📊</div>
-                        <div class="format-content">
-                            <h3>Excel (.xlsx)</h3>
-                            <p>Таблица со всеми данными. Удобно для анализа, сортировки, построения графиков.</p>
-                        </div>
+                <h3 class="help-subtitle">📋 Другие виды экспорта</h3>
+                <div class="help-legend">
+                    <div class="help-legend-item">
+                        <div class="legend-icon">🎫</div>
+                        <div class="legend-content"><strong>PDF-карточки</strong> — карточки с персональными кодами участников зачёта/среза для печати</div>
                     </div>
-                    <div class="export-format-card">
-                        <div class="format-icon word">📄</div>
-                        <div class="format-content">
-                            <h3>Word (.docx)</h3>
-                            <p>Готовая ведомость для печати. Можно распечатать и подписать.</p>
-                        </div>
+                    <div class="help-legend-item">
+                        <div class="legend-icon">👥</div>
+                        <div class="legend-content"><strong>Участники зачёта в Excel</strong> — список участников с кодами</div>
+                    </div>
+                    <div class="help-legend-item">
+                        <div class="legend-icon">📊</div>
+                        <div class="legend-content"><strong>Участники среза в Excel</strong> — список участников с вариантами и кодами</div>
+                    </div>
+                    <div class="help-legend-item">
+                        <div class="legend-icon">📥</div>
+                        <div class="legend-content"><strong>Вопросы в GIFT</strong> — экспорт вопросов теста в формат GIFT для переноса в другие системы</div>
+                    </div>
+                    <div class="help-legend-item">
+                        <div class="legend-icon">🖨️</div>
+                        <div class="legend-content"><strong>Предпросмотр для печати</strong> — версия теста для печати на бумаге</div>
+                    </div>
+                </div>
+
+                <div class="help-tip-box">
+                    <div class="help-tip-icon">💡</div>
+                    <div class="help-tip-content">
+                        <strong>Совет</strong>
+                        <p>Для официальных отчётов на кафедру используйте экспорт в Word — документ уже содержит шапку, таблицу и место для подписи.</p>
                     </div>
                 </div>
             </div>
@@ -1612,216 +1159,483 @@ function getHelpSections() {
         // ==========================================
         'anticheat': `
             <div class="help-section">
-                <h1>🛡️ Защита от списывания</h1>
-                <p class="help-subtitle">Система следит за честностью прохождения теста.</p>
+                <h2 class="help-subtitle">🛡️ Антисписывание</h2>
+                <p class="help-text">Система предлагает несколько уровней защиты от нечестного прохождения тестов. Комбинируйте их для максимальной эффективности.</p>
 
-                <h2>Как это работает</h2>
-                <div class="help-anticheat-features">
-                    <div class="anticheat-card">
-                        <div class="anticheat-icon">👁️</div>
-                        <div class="anticheat-content">
-                            <h3>Отслеживание вкладок</h3>
-                            <p>Система видит, когда студент переключается на другую вкладку или приложение. Каждое переключение записывается.</p>
-                        </div>
-                    </div>
-                    <div class="anticheat-card">
-                        <div class="anticheat-icon">🔀</div>
-                        <div class="anticheat-content">
-                            <h3>Случайный порядок</h3>
-                            <p>Вопросы и варианты ответов перемешиваются для каждого студента. Нельзя просто списать номера ответов.</p>
-                        </div>
-                    </div>
-                    <div class="anticheat-card">
-                        <div class="anticheat-icon">⏱️</div>
-                        <div class="anticheat-content">
-                            <h3>Ограничение времени</h3>
-                            <p>Таймер не остановить. Когда время выйдет — тест завершится автоматически.</p>
-                        </div>
-                    </div>
-                    <div class="anticheat-card">
-                        <div class="anticheat-icon">🔐</div>
-                        <div class="anticheat-content">
-                            <h3>Персональные коды</h3>
-                            <p>В режиме зачёта каждый входит под своим кодом. Нельзя зайти под чужим именем.</p>
-                        </div>
+                <h3 class="help-subtitle">🔒 Средства защиты</h3>
+
+                <div class="anticheat-card">
+                    <div class="anticheat-icon">👁️</div>
+                    <div class="anticheat-content">
+                        <h4>Отслеживание переключений вкладок</h4>
+                        <p>Система фиксирует каждый момент, когда студент уходит с вкладки теста. Преподаватель видит количество переключений в результатах. Можно настроить штрафное время — при каждом переключении у студента отнимаются минуты.</p>
                     </div>
                 </div>
 
-                <h2>Что видит преподаватель</h2>
-                <p>В результатах теста показано количество переключений на другие вкладки. Если там большое число — возможно студент искал ответы в интернете.</p>
-
-                <div class="help-warning-box">
-                    <div class="help-warning-icon">⚠️</div>
-                    <div class="help-warning-content">
-                        <strong>Предупреждение для студентов</strong>
-                        <p>Студенты видят предупреждение что система отслеживает переключения. Это само по себе снижает желание списывать.</p>
-                    </div>
-                </div>
-            </div>
-        `,
-
-        // ==========================================
-        // ДЛЯ СТУДЕНТОВ - КАК НАЧАТЬ
-        // ==========================================
-        'student-start': `
-            <div class="help-section">
-                <h1>🎒 Для студентов: как начать тест</h1>
-                <p class="help-subtitle">Покажите этот раздел студентам или перескажите своими словами.</p>
-
-                <div class="help-mode-info" style="margin-bottom: 24px;">
-                    <div class="mode-icon blue">🚀</div>
-                    <div class="mode-details">
-                        <h3>Единая ссылка для всех тестов:</h3>
-                        <div class="mode-url-big">kst-test.ru/start</div>
+                <div class="anticheat-card">
+                    <div class="anticheat-icon">🔀</div>
+                    <div class="anticheat-content">
+                        <h4>Перемешивание вопросов и ответов</h4>
+                        <p>Каждый студент получает вопросы в уникальном порядке, а варианты ответов тоже перемешаны. Подсмотреть у соседа становится бессмысленно — у него другой порядок.</p>
                     </div>
                 </div>
 
-                <div class="help-student-box blue">
-                    <h2>📝 Как начать тест</h2>
-                    <div class="help-steps-mini">
-                        <div class="step-mini">
-                            <span class="step-mini-num">1</span>
-                            <span>Откройте <strong>kst-test.ru/start</strong></span>
-                        </div>
-                        <div class="step-mini">
-                            <span class="step-mini-num">2</span>
-                            <span>Введите <strong>код</strong> — его скажет преподаватель</span>
-                        </div>
-                        <div class="step-mini">
-                            <span class="step-mini-num">3</span>
-                            <span>Система <strong>автоматически</strong> определит тип теста и откроет нужную страницу</span>
-                        </div>
-                        <div class="step-mini">
-                            <span class="step-mini-num">4</span>
-                            <span>Следуйте инструкциям на экране</span>
-                        </div>
+                <div class="anticheat-card">
+                    <div class="anticheat-icon">⏱️</div>
+                    <div class="anticheat-content">
+                        <h4>Ограничение времени</h4>
+                        <p>Жёсткий таймер не оставляет времени на поиск ответов в интернете. Когда время истекает — тест завершается автоматически.</p>
                     </div>
                 </div>
+
+                <div class="anticheat-card">
+                    <div class="anticheat-icon">🔑</div>
+                    <div class="anticheat-content">
+                        <h4>Персональные коды</h4>
+                        <p>В режимах зачёта и среза каждый студент получает уникальный 5-значный код. Нельзя войти чужим кодом или пройти тест за другого.</p>
+                    </div>
+                </div>
+
+                <h3 class="help-subtitle">📝 Заметки преподавателя</h3>
+                <p class="help-text">Во время мониторинга вы можете вручную добавить нарушение к любому студенту. Типы нарушений:</p>
 
                 <div class="help-summary-table">
-                    <h3>Какие бывают коды</h3>
                     <table>
-                        <tr>
-                            <th>Режим</th>
-                            <th>Код</th>
-                            <th>Особенности</th>
-                        </tr>
-                        <tr>
-                            <td>📖 Тренировка</td>
-                            <td>6 цифр</td>
-                            <td>Видны правильные ответы, нужно ввести ФИО</td>
-                        </tr>
-                        <tr>
-                            <td>📝 Контрольная работа</td>
-                            <td>6 цифр</td>
-                            <td>С античитами, нужно ввести ФИО</td>
-                        </tr>
-                        <tr>
-                            <td>🎓 Зачёт</td>
-                            <td>5 цифр</td>
-                            <td>Персональный код, ФИО определяется автоматически</td>
-                        </tr>
-                        <tr>
-                            <td>📊 Срез</td>
-                            <td>5 цифр</td>
-                            <td>Персональный код + свой вариант</td>
-                        </tr>
+                        <thead>
+                            <tr><th>Нарушение</th><th>Описание</th></tr>
+                        </thead>
+                        <tbody>
+                            <tr><td>📱 Использование телефона</td><td>Студент пользовался мобильным устройством</td></tr>
+                            <tr><td>👀 Подсматривание</td><td>Студент смотрел в экран или работу соседа</td></tr>
+                            <tr><td>📒 Использование конспектов</td><td>Студент пользовался записями или шпаргалками</td></tr>
+                            <tr><td>⚠️ Другое</td><td>Любое другое нарушение с комментарием</td></tr>
+                        </tbody>
                     </table>
                 </div>
 
                 <div class="help-tip-box">
                     <div class="help-tip-icon">💡</div>
                     <div class="help-tip-content">
-                        <strong>Просто запомните одну ссылку</strong>
-                        <p>Студентам достаточно знать только <strong>kst-test.ru/start</strong> — система сама разберётся, куда направить по введённому коду.</p>
-                    </div>
-                </div>
-
-                <div class="help-warning-box">
-                    <div class="help-warning-icon">⚠️</div>
-                    <div class="help-warning-content">
-                        <strong>Персональный код (5 цифр) — одноразовый!</strong>
-                        <p>Если вы закроете браузер во время зачёта или среза — попросите новый код у преподавателя.</p>
+                        <strong>Совет</strong>
+                        <p>Самая эффективная комбинация: перемешивание + ограничение времени + персональные коды. Используйте все три — и списать станет практически невозможно.</p>
                     </div>
                 </div>
             </div>
         `,
 
         // ==========================================
-        // ДЛЯ СТУДЕНТОВ - ИНТЕРФЕЙС
+        // МОНИТОРИНГ
         // ==========================================
-        'student-interface': `
+        'monitoring': `
             <div class="help-section">
-                <h1>🖥️ Для студентов: интерфейс теста</h1>
-                <p class="help-subtitle">Как выглядит тест и что делать.</p>
+                <h2 class="help-subtitle">📡 Мониторинг</h2>
+                <p class="help-text">Мониторинг позволяет в реальном времени наблюдать за ходом тестирования. Особенно полезен при проведении срезов и зачётов в аудитории.</p>
 
-                <div class="help-ui-demo">
-                    <div class="demo-test-interface">
-                        <div class="demo-test-top">
-                            <div class="demo-test-title">Тест по математике</div>
-                            <div class="demo-test-timer">⏱ 25:43</div>
-                        </div>
-                        <div class="demo-test-nav">
-                            <span class="q-btn done">1</span>
-                            <span class="q-btn done">2</span>
-                            <span class="q-btn current">3</span>
-                            <span class="q-btn">4</span>
-                            <span class="q-btn">5</span>
-                        </div>
-                        <div class="demo-test-question">
-                            <div class="demo-q-text">Вопрос 3 из 5</div>
-                            <div class="demo-q-content">Чему равен интеграл от cos(x)?</div>
-                            <div class="demo-q-answers">
-                                <label><input type="radio" name="demo"> sin(x) + C</label>
-                                <label><input type="radio" name="demo"> -sin(x) + C</label>
-                                <label><input type="radio" name="demo"> cos(x) + C</label>
-                            </div>
-                        </div>
-                        <div class="demo-test-bottom">
-                            <button class="demo-nav-btn">← Назад</button>
-                            <button class="demo-nav-btn primary">Далее →</button>
-                        </div>
+                <img src="/help-img/09-monitoring.png" alt="Мониторинг в реальном времени" class="help-screenshot" style="width:100%;border-radius:12px;border:1px solid #e5e5e5;margin:16px 0;">
+
+                <h3 class="help-subtitle">👁️ Что видит преподаватель</h3>
+                <div class="help-legend">
+                    <div class="help-legend-item">
+                        <div class="legend-icon">⚪</div>
+                        <div class="legend-content"><strong>Ожидает</strong> — студент ещё не начал тест</div>
+                    </div>
+                    <div class="help-legend-item">
+                        <div class="legend-icon">🔵</div>
+                        <div class="legend-content"><strong>В процессе</strong> — студент проходит тест прямо сейчас</div>
+                    </div>
+                    <div class="help-legend-item">
+                        <div class="legend-icon">🟢</div>
+                        <div class="legend-content"><strong>Завершил</strong> — тест пройден, виден результат</div>
+                    </div>
+                    <div class="help-legend-item">
+                        <div class="legend-icon">🔴</div>
+                        <div class="legend-content"><strong>Ошибка</strong> — возникла техническая проблема</div>
                     </div>
                 </div>
 
-                <h2>Элементы интерфейса</h2>
+                <h3 class="help-subtitle">👥 Группировка по группам</h3>
+                <p class="help-text">Студенты группируются по учебным группам. Нажмите на группу, чтобы развернуть список и увидеть статус каждого студента.</p>
+
+                <h3 class="help-subtitle">🔄 Автообновление</h3>
+                <p class="help-text">Данные обновляются автоматически каждые 30 секунд. Вам не нужно перезагружать страницу.</p>
+
+                <h3 class="help-subtitle">⚙️ Управление</h3>
                 <div class="help-legend">
                     <div class="help-legend-item">
-                        <span class="legend-icon">⏱</span>
-                        <div class="legend-content">
-                            <strong>Таймер</strong>
-                            <p>Показывает сколько времени осталось. Когда время выйдет — тест завершится автоматически!</p>
-                        </div>
+                        <div class="legend-icon">🔄</div>
+                        <div class="legend-content"><strong>Сброс попытки</strong> — если у студента произошёл сбой, можно сбросить его попытку, чтобы он начал заново</div>
                     </div>
                     <div class="help-legend-item">
-                        <span class="legend-icon">🔢</span>
-                        <div class="legend-content">
-                            <strong>Номера вопросов</strong>
-                            <p>Можно нажать на любой номер чтобы перейти к вопросу. Зелёные — уже отвечены.</p>
-                        </div>
-                    </div>
-                    <div class="help-legend-item">
-                        <span class="legend-icon">➡️</span>
-                        <div class="legend-content">
-                            <strong>Кнопки навигации</strong>
-                            <p>«Назад» и «Далее» переключают вопросы. Можно вернуться к любому вопросу.</p>
-                        </div>
+                        <div class="legend-icon">🚨</div>
+                        <div class="legend-content"><strong>Отслеживание ошибок</strong> — система показывает технические проблемы, если они возникли</div>
                     </div>
                 </div>
 
                 <div class="help-tip-box">
                     <div class="help-tip-icon">💡</div>
                     <div class="help-tip-content">
-                        <strong>Как завершить тест</strong>
-                        <p>После последнего вопроса появится кнопка «Завершить тест». Нажмите её когда ответите на все вопросы. Или подождите пока закончится время.</p>
+                        <strong>Совет</strong>
+                        <p>Откройте мониторинг на отдельном устройстве (планшете или втором мониторе) — так вы будете видеть прогресс студентов в реальном времени, не отвлекаясь от наблюдения за аудиторией.</p>
+                    </div>
+                </div>
+            </div>
+        `,
+
+        // ==========================================
+        // ЛИЧНЫЙ КАБИНЕТ
+        // ==========================================
+        'profile': `
+            <div class="help-section">
+                <h2 class="help-subtitle">👤 Личный кабинет</h2>
+                <p class="help-text">В личном кабинете можно изменить свои данные, загрузить аватар и настроить уведомления.</p>
+
+                <img src="/help-img/08-profile.png" alt="Личный кабинет" class="help-screenshot" style="width:100%;border-radius:12px;border:1px solid #e5e5e5;margin:16px 0;">
+
+                <h3 class="help-subtitle">✏️ Основные настройки</h3>
+                <div class="help-legend">
+                    <div class="help-legend-item">
+                        <div class="legend-icon">👤</div>
+                        <div class="legend-content"><strong>Имя</strong> — измените отображаемое имя (видно студентам)</div>
+                    </div>
+                    <div class="help-legend-item">
+                        <div class="legend-icon">🔒</div>
+                        <div class="legend-content"><strong>Пароль</strong> — смените пароль для входа в систему</div>
+                    </div>
+                </div>
+
+                <h3 class="help-subtitle">📷 Аватар</h3>
+                <p class="help-text">Загрузите своё фото или сделайте снимок с веб-камеры прямо в системе. Доступны инструменты обрезки и масштабирования.</p>
+
+                <div class="help-steps-mini">
+                    <div class="step-mini">
+                        <div class="step-mini-num">1</div>
+                        <span>Нажмите на область аватара</span>
+                    </div>
+                    <div class="step-mini">
+                        <div class="step-mini-num">2</div>
+                        <span>Выберите файл или используйте веб-камеру</span>
+                    </div>
+                    <div class="step-mini">
+                        <div class="step-mini-num">3</div>
+                        <span>Обрежьте и отмасштабируйте изображение</span>
+                    </div>
+                    <div class="step-mini">
+                        <div class="step-mini-num">4</div>
+                        <span>Сохраните</span>
+                    </div>
+                </div>
+
+                <h3 class="help-subtitle">📱 Telegram-уведомления</h3>
+                <p class="help-text">В личном кабинете также настраиваются Telegram-уведомления. Подробнее — в разделе <strong>«Telegram-уведомления»</strong>.</p>
+
+                <div class="help-tip-box">
+                    <div class="help-tip-icon">💡</div>
+                    <div class="help-tip-content">
+                        <strong>Совет</strong>
+                        <p>Загрузите аватар — так студенты будут видеть, кто их преподаватель, а интерфейс станет более персональным.</p>
+                    </div>
+                </div>
+            </div>
+        `,
+
+        // ==========================================
+        // TELEGRAM-УВЕДОМЛЕНИЯ
+        // ==========================================
+        'telegram': `
+            <div class="help-section">
+                <h2 class="help-subtitle">📱 Telegram-уведомления</h2>
+                <p class="help-text">Подключите Telegram-бота, чтобы получать уведомления о результатах тестирования прямо в мессенджер.</p>
+
+                <h3 class="help-subtitle">📋 Что приходит в уведомлениях</h3>
+                <div class="help-legend">
+                    <div class="help-legend-item">
+                        <div class="legend-icon">✅</div>
+                        <div class="legend-content">Студент завершил тест — ФИО, группа, результат</div>
+                    </div>
+                    <div class="help-legend-item">
+                        <div class="legend-icon">📊</div>
+                        <div class="legend-content">Оценка и процент правильных ответов</div>
+                    </div>
+                    <div class="help-legend-item">
+                        <div class="legend-icon">⚠️</div>
+                        <div class="legend-content">Предупреждения о нарушениях (переключения вкладок)</div>
+                    </div>
+                </div>
+
+                <h3 class="help-subtitle">🔧 Пошаговая настройка</h3>
+                <div class="help-steps">
+                    <div class="help-step">
+                        <div class="help-step-num">1</div>
+                        <div class="help-step-content">
+                            <h3>Создайте бота</h3>
+                            <p>Откройте Telegram и найдите <strong>@BotFather</strong>. Отправьте команду <code>/newbot</code>, придумайте имя и получите <strong>токен</strong> (длинная строка вида <code>123456:ABC-DEF...</code>).</p>
+                        </div>
+                    </div>
+                    <div class="help-step">
+                        <div class="help-step-num">2</div>
+                        <div class="help-step-content">
+                            <h3>Узнайте свой chat_id</h3>
+                            <p>Найдите бота <strong>@userinfobot</strong> и нажмите «Start». Он покажет ваш числовой <strong>chat_id</strong>. Скопируйте его.</p>
+                        </div>
+                    </div>
+                    <div class="help-step">
+                        <div class="help-step-num">3</div>
+                        <div class="help-step-content">
+                            <h3>Введите данные в профиле</h3>
+                            <p>Перейдите в <strong>Личный кабинет</strong> и вставьте токен бота и chat_id в соответствующие поля. Нажмите «Сохранить».</p>
+                        </div>
+                    </div>
+                    <div class="help-step">
+                        <div class="help-step-num">4</div>
+                        <div class="help-step-content">
+                            <h3>Готово!</h3>
+                            <p>Теперь при каждом завершении теста вам придёт сообщение в Telegram с результатом студента.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <h3 class="help-subtitle">⚙️ Управление уведомлениями</h3>
+                <p class="help-text">В профиле можно включить или выключить уведомления в любой момент. Токен и chat_id сохраняются — при повторном включении настраивать заново не нужно.</p>
+
+                <div class="help-tip-box">
+                    <div class="help-tip-icon">💡</div>
+                    <div class="help-tip-content">
+                        <strong>Совет</strong>
+                        <p>Создайте отдельного бота специально для уведомлений — так они не потеряются среди других сообщений.</p>
+                    </div>
+                </div>
+            </div>
+        `,
+
+        // ==========================================
+        // МОБИЛЬНОЕ ПРИЛОЖЕНИЕ (PWA)
+        // ==========================================
+        'pwa': `
+            <div class="help-section">
+                <h2 class="help-subtitle">📲 Мобильное приложение</h2>
+                <p class="help-text">Система тестирования — это PWA (Progressive Web App). Это значит, что её можно установить на телефон или планшет как обычное приложение, без скачивания из App Store или Google Play.</p>
+
+                <h3 class="help-subtitle">📱 Что такое PWA</h3>
+                <p class="help-text">PWA — это сайт, который работает как приложение. Он открывается в полноэкранном режиме, имеет свою иконку на рабочем столе и может работать при слабом интернете благодаря кешированию.</p>
+
+                <h3 class="help-subtitle">🍎 Установка на iPhone / iPad</h3>
+                <div class="help-steps-mini">
+                    <div class="step-mini">
+                        <div class="step-mini-num">1</div>
+                        <span>Откройте <strong>kst-test.ru</strong> в Safari</span>
+                    </div>
+                    <div class="step-mini">
+                        <div class="step-mini-num">2</div>
+                        <span>Нажмите кнопку <strong>«Поделиться»</strong> (квадрат со стрелкой вверх)</span>
+                    </div>
+                    <div class="step-mini">
+                        <div class="step-mini-num">3</div>
+                        <span>Выберите <strong>«На экран Домой»</strong></span>
+                    </div>
+                    <div class="step-mini">
+                        <div class="step-mini-num">4</div>
+                        <span>Нажмите <strong>«Добавить»</strong> — готово!</span>
+                    </div>
+                </div>
+
+                <h3 class="help-subtitle">🤖 Установка на Android</h3>
+                <div class="help-steps-mini">
+                    <div class="step-mini">
+                        <div class="step-mini-num">1</div>
+                        <span>Откройте <strong>kst-test.ru</strong> в Chrome</span>
+                    </div>
+                    <div class="step-mini">
+                        <div class="step-mini-num">2</div>
+                        <span>Нажмите <strong>меню (три точки)</strong> в правом верхнем углу</span>
+                    </div>
+                    <div class="step-mini">
+                        <div class="step-mini-num">3</div>
+                        <span>Выберите <strong>«Установить приложение»</strong> или <strong>«Добавить на главный экран»</strong></span>
+                    </div>
+                    <div class="step-mini">
+                        <div class="step-mini-num">4</div>
+                        <span>Подтвердите установку</span>
+                    </div>
+                </div>
+
+                <h3 class="help-subtitle">✨ Преимущества PWA</h3>
+                <div class="help-legend">
+                    <div class="help-legend-item">
+                        <div class="legend-icon">⚡</div>
+                        <div class="legend-content"><strong>Быстрый доступ</strong> — иконка на рабочем столе, один тап для входа</div>
+                    </div>
+                    <div class="help-legend-item">
+                        <div class="legend-icon">📡</div>
+                        <div class="legend-content"><strong>Работает оффлайн</strong> — кешированные страницы доступны без интернета</div>
+                    </div>
+                    <div class="help-legend-item">
+                        <div class="legend-icon">🔄</div>
+                        <div class="legend-content"><strong>Автообновление</strong> — всегда актуальная версия без ручного обновления</div>
+                    </div>
+                    <div class="help-legend-item">
+                        <div class="legend-icon">📱</div>
+                        <div class="legend-content"><strong>Полноэкранный режим</strong> — выглядит как настоящее приложение</div>
+                    </div>
+                </div>
+
+                <div class="help-tip-box">
+                    <div class="help-tip-icon">💡</div>
+                    <div class="help-tip-content">
+                        <strong>Совет для преподавателей</strong>
+                        <p>Установите PWA на планшет — так будет удобно мониторить зачёты и срезы, ходя по аудитории.</p>
+                    </div>
+                </div>
+            </div>
+        `,
+
+        // ==========================================
+        // КАК НАЧАТЬ ТЕСТ (ДЛЯ СТУДЕНТОВ)
+        // ==========================================
+        'student-start': `
+            <div class="help-section">
+                <h2 class="help-subtitle">🎒 Как начать тест</h2>
+                <p class="help-text">Эта инструкция для студентов. Расскажите им, как войти в тест — или покажите эту страницу.</p>
+
+                <div class="help-student-box">
+                    <h3 style="text-align:center;margin-bottom:12px;">Для начала перейдите по ссылке:</h3>
+                    <h2 style="text-align:center;color:#4f46e5;margin:8px 0;">kst-test.ru/start</h2>
+                    <p style="text-align:center;color:#666;">Введите код, который дал преподаватель, и нажмите «Начать»</p>
+                </div>
+
+                <img src="/help-img/10-student-start.png" alt="Страница входа студента" class="help-screenshot" style="width:100%;border-radius:12px;border:1px solid #e5e5e5;margin:16px 0;">
+
+                <h3 class="help-subtitle">🔢 Типы кодов</h3>
+                <div class="help-summary-table">
+                    <table>
+                        <thead>
+                            <tr><th>Режим</th><th>Код</th><th>Описание</th></tr>
+                        </thead>
+                        <tbody>
+                            <tr><td>🎯 Тренировка</td><td>6 цифр (общий)</td><td>Практика — сразу видны правильные ответы</td></tr>
+                            <tr><td>📝 Контрольная</td><td>6 цифр (общий)</td><td>Обычный тест — результат в конце</td></tr>
+                            <tr><td>🎓 Зачёт</td><td>5 цифр (личный)</td><td>Персональный код от преподавателя</td></tr>
+                            <tr><td>📊 Срез</td><td>5 цифр (личный)</td><td>Персональный код с привязкой к варианту</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <h3 class="help-subtitle">📋 Как определить тип теста</h3>
+                <p class="help-text">Система автоматически определяет тип теста по коду. Студенту не нужно ничего выбирать — просто введите код и нажмите «Начать».</p>
+
+                <div class="help-steps-mini">
+                    <div class="step-mini">
+                        <div class="step-mini-num">1</div>
+                        <span>Откройте <strong>kst-test.ru/start</strong></span>
+                    </div>
+                    <div class="step-mini">
+                        <div class="step-mini-num">2</div>
+                        <span>Введите код (5 или 6 цифр)</span>
+                    </div>
+                    <div class="step-mini">
+                        <div class="step-mini-num">3</div>
+                        <span>Для зачёта/среза введите ФИО (для контрольной — не обязательно)</span>
+                    </div>
+                    <div class="step-mini">
+                        <div class="step-mini-num">4</div>
+                        <span>Нажмите <strong>«Начать тест»</strong></span>
                     </div>
                 </div>
 
                 <div class="help-warning-box">
                     <div class="help-warning-icon">⚠️</div>
                     <div class="help-warning-content">
+                        <strong>Важно для студентов!</strong>
+                        <p>Не делитесь своим персональным кодом с другими. Код привязан к вашему имени — если кто-то войдёт под вашим кодом, его результат запишется на вас.</p>
+                    </div>
+                </div>
+            </div>
+        `,
+
+        // ==========================================
+        // ИНТЕРФЕЙС ТЕСТА (ДЛЯ СТУДЕНТОВ)
+        // ==========================================
+        'student-interface': `
+            <div class="help-section">
+                <h2 class="help-subtitle">🖥️ Интерфейс теста</h2>
+                <p class="help-text">Когда тест начнётся, вы увидите интерфейс с вопросом, вариантами ответа и кнопками навигации. Вот что означает каждый элемент.</p>
+
+                <h3 class="help-subtitle">⏱️ Таймер</h3>
+                <p class="help-text">В верхней части экрана отображается оставшееся время. Когда время подходит к концу, таймер становится красным. По истечении времени тест завершается автоматически — ваши ответы сохранятся.</p>
+
+                <h3 class="help-subtitle">🔢 Навигация по вопросам</h3>
+                <p class="help-text">Пронумерованные кнопки позволяют переключаться между вопросами. Отвеченные вопросы помечаются цветом. Можно возвращаться к предыдущим вопросам и менять ответы.</p>
+
+                <h3 class="help-subtitle">📋 Типы ответов</h3>
+                <div class="help-tabs-explain">
+                    <div class="help-tab-card">
+                        <div class="tab-card-icon">🔘</div>
+                        <div class="tab-card-content">
+                            <h4>Одиночный выбор</h4>
+                            <p>Нажмите на один вариант ответа (радиокнопка).</p>
+                        </div>
+                    </div>
+                    <div class="help-tab-card">
+                        <div class="tab-card-icon">☑️</div>
+                        <div class="tab-card-content">
+                            <h4>Множественный выбор</h4>
+                            <p>Отметьте все правильные варианты (чекбоксы). Можно выбрать несколько.</p>
+                        </div>
+                    </div>
+                    <div class="help-tab-card">
+                        <div class="tab-card-icon">🔗</div>
+                        <div class="tab-card-content">
+                            <h4>Сопоставление</h4>
+                            <p>Перетащите элементы из правой колонки к соответствующим элементам левой (drag-and-drop).</p>
+                        </div>
+                    </div>
+                    <div class="help-tab-card">
+                        <div class="tab-card-icon">🔢</div>
+                        <div class="tab-card-content">
+                            <h4>Расстановка по порядку</h4>
+                            <p>Перетащите элементы в правильной последовательности (drag-and-drop).</p>
+                        </div>
+                    </div>
+                    <div class="help-tab-card">
+                        <div class="tab-card-icon">✏️</div>
+                        <div class="tab-card-content">
+                            <h4>Текстовый ответ</h4>
+                            <p>Введите ответ в поле ввода. Регистр не учитывается.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <h3 class="help-subtitle">🔀 Навигация</h3>
+                <div class="help-legend">
+                    <div class="help-legend-item">
+                        <div class="legend-icon">⬅️</div>
+                        <div class="legend-content"><strong>Назад</strong> — вернуться к предыдущему вопросу</div>
+                    </div>
+                    <div class="help-legend-item">
+                        <div class="legend-icon">➡️</div>
+                        <div class="legend-content"><strong>Вперёд</strong> — перейти к следующему вопросу</div>
+                    </div>
+                    <div class="help-legend-item">
+                        <div class="legend-icon">✅</div>
+                        <div class="legend-content"><strong>Завершить тест</strong> — отправить все ответы (кнопка появляется на последнем вопросе или доступна в меню)</div>
+                    </div>
+                </div>
+
+                <h3 class="help-subtitle">🎯 Режим тренировки</h3>
+                <p class="help-text">Если тест в режиме тренировки — после каждого ответа вы сразу увидите, правильно ли ответили. Правильный ответ подсвечивается зелёным, ваш ошибочный — красным.</p>
+
+                <div class="help-warning-box">
+                    <div class="help-warning-icon">⚠️</div>
+                    <div class="help-warning-content">
                         <strong>Не переключайтесь на другие вкладки!</strong>
-                        <p>Система видит когда вы уходите с теста. Преподаватель увидит сколько раз вы переключались.</p>
+                        <p>Система фиксирует каждое переключение на другую вкладку или окно. Преподаватель видит количество переключений в результатах. При настроенном штрафе у вас будет отниматься время.</p>
+                    </div>
+                </div>
+
+                <div class="help-tip-box">
+                    <div class="help-tip-icon">💡</div>
+                    <div class="help-tip-content">
+                        <strong>Совет</strong>
+                        <p>Отвечайте на все вопросы, даже если не уверены — за неотвеченный вопрос баллов точно не будет, а угадать можно.</p>
                     </div>
                 </div>
             </div>
@@ -1833,7 +1647,6 @@ function getHelpSections() {
 function checkFirstVisit() {
     const hasVisited = localStorage.getItem('admin_visited');
     if (!hasVisited) {
-        // Первый визит - показываем справку
         setTimeout(() => {
             showHelpModal();
         }, 500);

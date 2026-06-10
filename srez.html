@@ -10,30 +10,45 @@
     <meta http-equiv="Expires" content="0">
     <title>Административный срез</title>
     <link rel="icon" href="logo.jpg">
-    <link rel="stylesheet" href="styles.css?v=20260126">
-    <!-- Принудительный сброс кэша и Service Worker -->
+    <link rel="stylesheet" href="styles.min.css?v=20260611">
+    <!-- PWA Service Worker -->
     <script>
-        (function() {
-            if ('serviceWorker' in navigator) {
-                navigator.serviceWorker.getRegistrations().then(function(registrations) {
-                    for (let registration of registrations) {
-                        registration.unregister();
-                    }
+        if ("serviceWorker" in navigator) {
+            window.addEventListener("load", function() {
+                navigator.serviceWorker.register("/sw.js").then(function(reg) {
+                    console.log("SW registered, scope:", reg.scope);
+                    // Проверяем обновления каждые 30 минут
+                    setInterval(function() { reg.update(); }, 30 * 60 * 1000);
+                    // При обнаружении нового SW — показать уведомление
+                    reg.addEventListener("updatefound", function() {
+                        var newWorker = reg.installing;
+                        newWorker.addEventListener("statechange", function() {
+                            if (newWorker.state === "activated" && navigator.serviceWorker.controller) {
+                                var banner = document.createElement("div");
+                                banner.id = "pwa-update-banner";
+                                banner.style.cssText = "position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:#1a1a2e;color:#fff;padding:12px 24px;border-radius:12px;font-size:14px;z-index:99999;box-shadow:0 4px 12px rgba(0,0,0,0.15);font-family:-apple-system,sans-serif;";
+                                banner.textContent = "Доступна новая версия. ";
+                                var link = document.createElement("a");
+                                link.href = "#";
+                                link.textContent = "Обновить";
+                                link.style.cssText = "color:#60a5fa;margin-left:8px;font-weight:600;";
+                                link.addEventListener("click", function(e) { e.preventDefault(); location.reload(); });
+                                banner.appendChild(link);
+                                document.body.appendChild(banner);
+                                setTimeout(function() { if (banner.parentNode) banner.remove(); }, 15000);
+                            }
+                        });
+                    });
+                }).catch(function(err) {
+                    console.log("SW registration failed:", err);
                 });
-            }
-            if ('caches' in window) {
-                caches.keys().then(function(names) {
-                    for (let name of names) {
-                        caches.delete(name);
-                    }
-                });
-            }
-        })();
+            });
+        }
     </script>
     <script>
     // Apply saved theme on load (before render to prevent flash)
     (function() {
-        var saved = localStorage.getItem('preferred-theme');
+        var saved = localStorage.getItem('theme');
         if (saved) document.documentElement.setAttribute('data-theme', saved);
         else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
             document.documentElement.setAttribute('data-theme', 'dark');
@@ -566,7 +581,7 @@
             const current = document.documentElement.getAttribute('data-theme');
             const next = current === 'dark' ? 'light' : 'dark';
             document.documentElement.setAttribute('data-theme', next);
-            localStorage.setItem('preferred-theme', next);
+            localStorage.setItem('theme', next);
             updateThemeIcon();
         }
 
@@ -802,6 +817,7 @@
                 isExamMode: true,
                 isAdminSrezMode: true,
                 examSessionToken: (srezData && srezData.examSessionToken) || '', // HMAC-подпись сессии (аудит 2026-06-10): без неё сервер понижал срез-результат и не отмечал участника
+
                 examPassword: currentPassword, // Пароль для восстановления сессии
                 variant: participantData.variant,
                 studentName: participantData.name,

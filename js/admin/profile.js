@@ -714,28 +714,15 @@ async function testTelegram() {
         return;
     }
 
-    try {
-        const message = `✅ Тестовое сообщение!\n\nВаш бот успешно подключен к системе тестирования.\n\nВремя: ${new Date().toLocaleString('ru-RU')}`;
+    const result = await apiRequest('/auth/test-telegram', 'POST', {
+        token: token,
+        chatId: chatId
+    });
 
-        const response = await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                chat_id: chatId,
-                text: message,
-                parse_mode: 'HTML'
-            })
-        });
-
-        const data = await response.json();
-
-        if (data.ok) {
-            await showSuccess('Сообщение отправлено! Проверьте Telegram.');
-        } else {
-            await showError('Ошибка: ' + (data.description || 'Неизвестная ошибка'));
-        }
-    } catch (error) {
-        await showError('Ошибка подключения: ' + error.message);
+    if (result.success) {
+        await showSuccess('Сообщение отправлено! Проверьте Telegram.');
+    } else {
+        await showError(result.error || 'Ошибка отправки тестового сообщения');
     }
 }
 
